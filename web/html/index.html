@@ -81,7 +81,7 @@
 	thAppend("%");
 	thAppend("Annuler");
 	download.on("status", list => {
-		console.log(list);
+		//console.log(list);
 		[...tbody.children].filter((e,i)=> i>= 1).map(e => e.remove());
 		function t (t){
 			if (document.getElementById("tracer").children.length !== 0) [...document.getElementById("tracer").children[1].children]
