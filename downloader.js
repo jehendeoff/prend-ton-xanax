@@ -62,8 +62,9 @@ function downloadEP (site, module, path, fileName, info){
 		DownloadList[current]["size"]--;
 		current = "working";
 
+		const location = __dirname +"/downloader/" + DownloadList[current][where]["site"] + ".js";
 		cluster.setupPrimary({
-			exec: __dirname +"/downloader/" + module + ".js",
+			exec: location,
 			silent: true
 		});
 		const download = cluster.fork();
