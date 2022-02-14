@@ -198,7 +198,7 @@
 		inputTracer.disabled = true;
 		download.emit("trace", {
 			url: inputTracer.value,
-			module: "animedao"
+			module: inputTracer.value.match(/https?:\/\/([^.]*)/)[1]
 		})
 	}
 	document.body.appendChild(confirmTracer);
