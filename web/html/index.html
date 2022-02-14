@@ -117,7 +117,7 @@
 					tr.appendChild(th);
 					return th;
 				}
-				thAppend(downloadState["info"]["anime"] ?? "")
+				thAppend(downloadState["info"] ? downloadState["info"]["anime"] ?? "" : "")
 				thAppend(downloadState["filename"] ?? "");
 				thAppend(downloadState["speed"] ?? "");
 				const percent = (downloadState["percent"] ?? "").slice(0,5)
@@ -137,7 +137,7 @@
 
 				if (document.getElementById("tracer").children.length !== 0){
 
-					if (downloadState["info"]["anime"] === document.getElementById("tracer").children[0].innerText){
+					if (downloadState["info"] && downloadState["info"]["anime"] === document.getElementById("tracer").children[0].innerText){
 						[...document.getElementById("tracer").children[1].children]
 						.filter(e => e.hasAttribute("ep") && e.getAttribute("ep") === downloadState["info"]["ep"])
 						.forEach(e => {
