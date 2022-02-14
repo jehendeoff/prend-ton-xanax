@@ -54,7 +54,16 @@ async function scrape ()  {
 
 		console.clear = () => {};
 		console.error("here");
-		//debugger;
+		debugger;
+		if(document.location.hash !== ""){
+			if (document.location.hash.startsWith("#Episode=")){
+				const ep = atob(document.location.hash.slice("#Episode=".length));
+				const clickable = [...document.querySelectorAll("#player-tabs > div.tab-blocks > div:nth-child(1) > div > div.new_player_top > div.new_player_selector_box > div.jq-selectbox-wrapper > div > div.jq-selectbox__dropdown > ul > li")]
+					.filter(e => e.innerText === ep);
+				clickable[0].click();
+
+			}
+		}
 
 
 		const player = document.getElementById("film_iframe");
