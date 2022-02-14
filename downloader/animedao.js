@@ -70,17 +70,15 @@ async function scrape ()  {
 
 		const vcdn = [...document.getElementById("videocontent").children[0].children].filter(e => e.innerText.toLowerCase().replace(/ /g, "") === "vcdn");
 
-		if (vcdn && vcdn.length !== 0) {if (vcdn && vcdn.length !== 0) {
+		if (vcdn && vcdn.length !== 0) {
 			console.log("Vcdn is available.", vcdn.length);
 
 			await wait();
+			await sleep(2000);
 		} else {
 			console.log("There vcdn isn't available.");
 
 		}
-		await sleep(2000);
-		} else {
-			console.log("There vcdn isn't available.");
 
 		await sleep(2000);
 
