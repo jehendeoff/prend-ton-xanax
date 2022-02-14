@@ -55,6 +55,11 @@ async function scrape ()  {
 		console.error("here");
 		//debugger;
 
+		function sleep(ms) {
+			return new Promise(resolve => {
+				setTimeout(resolve, ms);
+			});
+		}
 		async function wait() {
 			if (document.getElementById("videowrapper_fembed").children.length !== 0) return;
 			console.log("We are still clicking vcdn");
@@ -77,13 +82,6 @@ async function scrape ()  {
 		} else {
 			console.log("There vcdn isn't available.");
 
-		}
-
-		function sleep(ms) {
-			return new Promise(resolve => {
-				setTimeout(resolve, ms);
-			});
-		}
 		await sleep(2000);
 
 		return document.getElementById("videowrapper_fembed").children[0].src;
