@@ -54,7 +54,7 @@ async function scrape ()  {
 
 		console.clear = () => {};
 		console.error("here");
-		debugger;
+		//debugger;
 		if(document.location.hash !== ""){
 			if (document.location.hash.startsWith("#Episode=")){
 				const ep = atob(document.location.hash.slice("#Episode=".length));
