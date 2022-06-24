@@ -1,6 +1,6 @@
 exports.cancelCloudflare = async (page) => {
 	if (await hasCloudflare(page) === true){
-		await await page.reload({ waitUntil: ["networkidle0", "domcontentloaded"] });
+		await page.reload({ waitUntil: ["networkidle0", "domcontentloaded"] });
 
 		
 		if (await hasCloudflare(page) === true) {
@@ -11,8 +11,6 @@ exports.cancelCloudflare = async (page) => {
 	return;
 };
 const hasCloudflare = async (page) => {
-	return await page.evaluate(async () => {
-		if (document.title === "Just a moment...") return true;
-		return false;
-	});
+	if (await page.title() === "Just a moment...") return true;
+	return false;
 };
