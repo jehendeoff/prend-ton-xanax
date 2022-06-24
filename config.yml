@@ -1,5 +1,7 @@
 animePath: /home/jehende/anime/
 app:
   port: 10410
+downloader: 
+  simultaneous: 2
 puppeteer:
   chromePath: opera

@@ -159,7 +159,7 @@ function downloadEP (site, module, path, fileName, info){
 		});
 	}
 	function isready (){
-		if(DownloadList["working"].size <2){
+		if(DownloadList["working"].size <global.config.downloader?.simultaneous ?? 2){
 			clearInterval(interval);
 			run();
 		}
