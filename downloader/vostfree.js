@@ -36,7 +36,7 @@ process.on("message", async (msg) => {
 
 async function scrape ()  {
 	const browser = await puppeteer.launch({
-		//executablePath: "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+		executablePath: process.env["chromePath"],
 		headless: false,
 		//devtools: true
 
