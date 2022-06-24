@@ -65,7 +65,7 @@ function downloadEP (site, module, path, fileName, info){
 		const location = __dirname +"/downloader/" + DownloadList[current][where]["site"] + ".js";
 		cluster.setupPrimary({
 			exec: location,
-			silent: true
+			silent: true,
 		});
 		const download = cluster.fork({
 			chromePath: global.config.puppeteer?.chromePath ?? ""

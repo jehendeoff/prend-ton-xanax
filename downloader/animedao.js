@@ -6,9 +6,10 @@ puppeteer.use(StealthPlugin());
 const { DownloaderHelper } = require("node-downloader-helper");
 const fs = require("fs");
 
-urlAnime = "https://animedao.to/view/6661668038/";
-path = __dirname;
-fileNameEP = undefined;
+const cookiePath = __dirname + "/../cookies/animedao.json";
+var urlAnime = "https://animedao.to/view/6661668038/";
+var animePath = __dirname  +"/";
+var fileNameEP = undefined;
 
 process.on("message", async (msg) => {
 	if (msg === "stop"){
@@ -28,7 +29,7 @@ process.on("message", async (msg) => {
 		process.exit(0);
 	}
 	if (resp.split(/\r\n/g)[0] === "url") urlAnime = resp.split(/\r\n/g)[1];
-	if (resp.split(/\r\n/g)[0] === "path") path = resp.split(/\r\n/g)[1];
+	if (resp.split(/\r\n/g)[0] === "path") animePath = resp.split(/\r\n/g)[1];
 	if (resp.split(/\r\n/g)[0] === "filename") fileNameEP = resp.split(/\r\n/g)[1];
 
 });
@@ -45,10 +46,22 @@ async function scrape ()  {
 	});
 
 	const page = await browser.newPage();
+	if (fs.existsSync(cookiePath)){
+		const cookiesString = fs.readFileSync(cookiePath, "utf-8");
+		const cookies = JSON.parse(cookiesString);
+		await page.setCookie(...cookies);
+	}
+	
+	// browser.on("targetcreated", async (target)=>{
+	// 	const page = await target.page();
+	// 	console.log("Looking: closing a popup"); // TODO doesn't work
+	// 	if(page) page.close();
+	// });
 
 	process.send("Looking: Going to Animedao");
 	await page.goto(urlAnime, {
-		timeout:0
+		timeout:0,
+		waitUntil: "load"
 	});
 	
 	await cloudflareBypasser.cancelCloudflare(page);
@@ -93,11 +106,6 @@ async function scrape ()  {
 	process.send("Looking: Vcdn detected, getting video file");
 	const frameHandler = await page.$("#videowrapper_fembed > iframe");
 	const frame = await frameHandler.contentFrame();
-	browser.on("targetcreated", async (target)=>{
-		const page = await target.page();
-		console.log("Looking: closing a popup");
-		if(page) page.close();
-	});
 	const video = await frame.evaluate(async fileNameEP => {
 		console.clear = () => {
 			console.log("ptdr tu clear");
@@ -177,6 +185,8 @@ async function scrape ()  {
 		return document.getElementsByTagName("video")[0].src || document.getElementsByTagName("video")[0].children[0].src;
 	});
 
+	const cookies = await page.cookies();
+	await fs.writeFileSync(cookiePath, JSON.stringify(cookies));
 	await page.close();
 
 	await browser.close();
@@ -189,8 +199,8 @@ async function scrape ()  {
 let dl;
 function download(url, name){
 	return new Promise(r => {
-		if (!fs.existsSync(path)) fs.mkdirSync(path);
-		dl = new DownloaderHelper(url, path, {
+		if (!fs.existsSync(animePath)) fs.mkdirSync(animePath);
+		dl = new DownloaderHelper(url, animePath, {
 			fileName: name,
 			headers: {
 				"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/71.0.3578.98 Safari/537.36",
