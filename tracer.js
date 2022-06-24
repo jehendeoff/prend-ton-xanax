@@ -7,10 +7,12 @@ function trace (site, module, ){
 			silent: true
 		});
 
-		const download = cluster.fork();
+		const download = cluster.fork({
+			chromePath: global.config.puppeteer?.chromePath ?? ""
+		});
 		download.send("url\r\n" + site);
 		download.send("look\r\n");
-		if(global.animePath) download.send("animepath\r\n" + global.animePath);
+		if(global.config.animePath) download.send("animepath\r\n" + global.config.animePath);
 
 		download.on("message", m => res(m));
 		download.on("error", () => {

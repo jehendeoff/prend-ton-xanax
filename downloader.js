@@ -20,8 +20,8 @@ function ChangeEvent(fn){event = fn;}
 
 function downloadEP (site, module, path, fileName, info){
 	let where = Math.random().toString().slice(2);
-	if (path) path = global.animePath + path + "/";
-	else path = global.animePath + "Unknown/";
+	if (path) path = global.config.animePath + path + "/";
+	else path = global.config.animePath + "Unknown/";
 
 
 	while(DownloadList["errored"][where] !== undefined
@@ -67,7 +67,9 @@ function downloadEP (site, module, path, fileName, info){
 			exec: location,
 			silent: true
 		});
-		const download = cluster.fork();
+		const download = cluster.fork({
+			chromePath: global.config.puppeteer?.chromePath ?? ""
+		});
 		function error(){
 			if (current !== "errored"){
 				DownloadList["errored"][where] = DownloadList[current][where];
