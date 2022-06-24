@@ -1,5 +1,7 @@
 /* eslint-disable no-undef */
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-extra");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+puppeteer.use(StealthPlugin());
 const { DownloaderHelper } = require("node-downloader-helper");
 const fs = require("fs");
 
@@ -35,9 +37,9 @@ process.on("message", async (msg) => {
 
 async function scrape ()  {
 	const browser = await puppeteer.launch({
-		//executablePath: "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
+		executablePath: process.env["chromePath"],
 		headless: false,
-		//devtools: true
+		devtools: true
 
 	});
 
@@ -47,6 +49,27 @@ async function scrape ()  {
 	await page.goto(urlAnime, {
 		timeout:0
 	});
+	const hasCloudflare = async () => {
+		return await page.evaluate(async () => {
+			if (document.title === "Just a moment...") return true;
+			return false;
+		});
+	};
+	const cancelCloudflare = async () => {
+		if (await hasCloudflare() === true){
+			process.send("Looking: Detected cloudflare, bypassing ...");
+			await await page.reload({ waitUntil: ["networkidle0", "domcontentloaded"] });
+			console.log("shit.");
+	
+			
+			if (await hasCloudflare() === true) {
+				await page.waitForTimeout(5500);
+				await cancelCloudflare();
+			}
+		}
+		return;
+	};
+	await cancelCloudflare();
 
 	process.send("Looking: Trying with vcdn");
 	await page.evaluate(async () => {
@@ -164,6 +187,8 @@ async function scrape ()  {
 
 	}, fileNameEP);
 	console.log(video);
+	if (typeof video !== "object")
+		throw new Error(video);
 	//await frame.click("#video_download_link");
 	process.send("Looking: Got video File launching download. F:" + Buffer.from(video.name).toString("base64"));
 	const urlVideo = await frame.evaluate(() => {

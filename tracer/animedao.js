@@ -1,5 +1,8 @@
 /* eslint-disable no-undef */
-const puppeteer = require("puppeteer");
+const puppeteer = require("puppeteer-extra");
+const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+
+puppeteer.use(StealthPlugin());
 const fs = require("fs");
 urlAnime = "https://animedao.to/anime/life-with-an-ordinary-guy-who-reincarnated-into-a-total-fantasy-knockout/";
 animepath = __dirname + "/";
@@ -21,8 +24,9 @@ process.on("message", async (msg) => {
 
 async function scrape ()  {
 	const browser = await puppeteer.launch({
-		//executablePath: "C:\\Program Files (x86)\\Microsoft\\Edge\\Application\\msedge.exe",
-		headless: true,
+		executablePath: process.env["chromePath"],
+		headless: false,
+		devtools: true
 
 	});
 
@@ -33,8 +37,29 @@ async function scrape ()  {
 		timeout:0,
 		waitUntil: "load"
 	});
+	const hasCloudflare = async () => {
+		return await page.evaluate(async () => {
+			if (document.title === "Just a moment...") return true;
+			return false;
+		});
+	};
+	const cancelCloudflare = async () => {
+		if (await hasCloudflare() === true){
+			await await page.reload({ waitUntil: ["networkidle0", "domcontentloaded"] });
+			console.log("shit.");
+	
+			
+			if (await hasCloudflare() === true) {
+				await page.waitForTimeout(5500);
+				await cancelCloudflare();
+			}
+		}
+		return;
+	};
+	await cancelCloudflare();
 
 	let res = await page.evaluate(async (now) => {
+		
 		let resClient = {
 			time: now,
 			module: "animedao"
