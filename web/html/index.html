@@ -18,13 +18,24 @@
 	table{
 		border-collapse: collapse;
 	}
+	th:nth-child(5){
+		background-color: #fbb;
+		cursor: pointer;
+	}
 	tr:nth-child(odd){
 		background-color: #bbb;
 	}
+	tr:nth-child(odd) > th:nth-child(5){
+		background-color: #f99;
+	}
 	tr:nth-child(1){
-		background-color: #444;
+		background-color: #444 ;
 		color: #fff;
 	}
+	tr:nth-child(1) > th:nth-child(5){
+		background-color: #444 ;
+	}
+
 	.wrapper{
 		display:grid;
 		grid-gap: 10px;
