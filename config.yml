@@ -1,7 +1,7 @@
 animePath: /home/jehende/anime/
 anime: 
   prefer:
-    language: vostfr
+    language: vostfr #in lowercase
 app:
   port: 10410
 downloader: 
