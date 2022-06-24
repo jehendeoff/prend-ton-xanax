@@ -1,0 +1,5 @@
+animePath: /home/jehende/anime/
+app:
+  port: 10410
+puppeteer:
+  chromePath: opera
