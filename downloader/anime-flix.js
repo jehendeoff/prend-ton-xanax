@@ -41,7 +41,7 @@ async function scrape ()  {
 	const browser = await puppeteer.launch({
 		executablePath: process.env["chromePath"],
 		headless: false,
-		devtools: true,
+		//devtools: true,
 
 	});
 
@@ -78,7 +78,7 @@ async function scrape ()  {
 	const compatible = languages.filter(li => li.server === "voe.sx"); // NOTE, maybe add more compatibility
 	const withLang = compatible.filter(li => li.language === preferedLanguage);
 	if (withLang.length !== 0){
-		choosedService = withLang[0];
+		choosedLanguage = withLang[0];
 	}
 
 	process.send("Looking: Trying with " + choosedLanguage.server + ", language : " + choosedLanguage.language);
