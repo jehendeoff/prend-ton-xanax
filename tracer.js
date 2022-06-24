@@ -8,7 +8,8 @@ function trace (site, module, ){
 		});
 
 		const download = cluster.fork({
-			chromePath: global.config.puppeteer?.chromePath ?? ""
+			chromePath: global.config.puppeteer?.chromePath ?? "",
+			preferLanguage :  global.config.anime?.prefer?.language ?? "",
 		});
 		download.send("url\r\n" + site);
 		download.send("look\r\n");

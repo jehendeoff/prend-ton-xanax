@@ -68,7 +68,8 @@ function downloadEP (site, module, path, fileName, info){
 			silent: true,
 		});
 		const download = cluster.fork({
-			chromePath: global.config.puppeteer?.chromePath ?? ""
+			chromePath: global.config.puppeteer?.chromePath ?? "",
+			preferLanguage :  global.config.anime?.prefer?.language ?? "",
 		});
 		function error(){
 			if (current !== "errored"){
