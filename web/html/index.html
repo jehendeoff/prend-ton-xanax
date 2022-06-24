@@ -240,8 +240,11 @@
 
 		for (const key in m["ep"]) {
 			const a = document.createElement("a");
-			a.innerText = "Episode " + key;
-			const ep = key.match(/[0-9.]*/g)[0];
+			const PreText = key.toString().includes("-") ? "S" : "Episode";
+
+			a.innerText = `${PreText} ${key.toString().includes("-") ? key.toString().replace("-", "EP") : key.toString()}`;
+			//NOTE, this can be better (such as a separator for seasons)
+			const ep = key.match(/[0-9., -]*/g)[0];
 			a.setAttribute("ep", ep)
 			if (m["ep"][key]["downloaded"] !==true){
 				a.onclick = () => {
