@@ -1,6 +1,7 @@
 /* eslint-disable no-undef */
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
+const cloudflareBypasser = require("../puppeteer functions/cloudflare bypasser");
 
 puppeteer.use(StealthPlugin());
 const fs = require("fs");
@@ -37,26 +38,7 @@ async function scrape ()  {
 		timeout:0,
 		waitUntil: "load"
 	});
-	const hasCloudflare = async () => {
-		return await page.evaluate(async () => {
-			if (document.title === "Just a moment...") return true;
-			return false;
-		});
-	};
-	const cancelCloudflare = async () => {
-		if (await hasCloudflare() === true){
-			await await page.reload({ waitUntil: ["networkidle0", "domcontentloaded"] });
-			console.log("shit.");
-	
-			
-			if (await hasCloudflare() === true) {
-				await page.waitForTimeout(5500);
-				await cancelCloudflare();
-			}
-		}
-		return;
-	};
-	await cancelCloudflare();
+	await cloudflareBypasser.cancelCloudflare(page);
 
 	let res = await page.evaluate(async (now) => {
 		
