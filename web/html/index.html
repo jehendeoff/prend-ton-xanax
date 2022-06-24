@@ -203,6 +203,12 @@
 
 	const confirmTracer = document.createElement("input");
 	confirmTracer.setAttribute("type", "submit")
+
+	download.on("connect", ()=> {
+		confirmTracer.disabled = false;
+		inputTracer.disabled = false;
+	})
+
 	confirmTracer.onclick = ()=> {
 		confirmTracer.disabled = true;
 		inputTracer.disabled = true;
