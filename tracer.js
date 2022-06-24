@@ -10,7 +10,7 @@ function trace (site, module, ){
 		const download = cluster.fork();
 		download.send("url\r\n" + site);
 		download.send("look\r\n");
-		if(animePath) download.send("animepath\r\n" + animePath);
+		if(global.animePath) download.send("animepath\r\n" + global.animePath);
 
 		download.on("message", m => res(m));
 		download.on("error", () => {

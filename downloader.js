@@ -20,8 +20,8 @@ function ChangeEvent(fn){event = fn;}
 
 function downloadEP (site, module, path, fileName, info){
 	let where = Math.random().toString().slice(2);
-	if (path) path = animePath + path + "/";
-	else path = animePath + "Unknown/";
+	if (path) path = global.animePath + path + "/";
+	else path = global.animePath + "Unknown/";
 
 
 	while(DownloadList["errored"][where] !== undefined

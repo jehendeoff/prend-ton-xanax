@@ -17,7 +17,7 @@ function SetTracer (arg){
 }
 
 const app = http.createServer((req, res)=> {
-	const url = new URL(req.url, `http://${req.headers["host"]}/`);
+	const url = new URL(req.url, `http://${req.headers["host"]}${req.url ?? "/"}`);
 
 	switch (url.pathname) {
 	case "/":{
