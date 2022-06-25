@@ -18,6 +18,10 @@
 	table{
 		border-collapse: collapse;
 	}
+	th{
+		width: max-content;
+		padding: 0px 3px;
+	}
 	th:nth-child(5){
 		background-color: #fbb;
 		cursor: pointer;
@@ -269,6 +273,8 @@
 		}
 	})
 	download.on("stop", console.log)
+
+	document.getElementById("loading").innerText = "Downloader"
 
 
 </script>
