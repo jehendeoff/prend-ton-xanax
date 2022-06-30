@@ -20,8 +20,8 @@ function ChangeEvent(fn){event = fn;}
 
 function downloadEP (site, module, path, fileName, info){
 	let where = Math.random().toString().slice(2);
-	if (path) path = global.config.animePath + path + "/";
-	else path = global.config.animePath + "Unknown/";
+	if (path) path = global.config.anime.path + path + "/";
+	else path = global.config.anime.path + "Unknown/";
 
 
 	while(DownloadList["errored"][where] !== undefined
@@ -69,7 +69,8 @@ function downloadEP (site, module, path, fileName, info){
 		});
 		const download = cluster.fork({
 			chromePath: global.config.puppeteer?.chromePath ?? "",
-			preferLanguage :  global.config.anime?.prefer?.language ?? "",
+			preferLanguage:  global.config.anime?.prefer?.language ?? "",
+			appCookie: global.config.app.cookie,
 		});
 		function error(){
 			if (current !== "errored"){

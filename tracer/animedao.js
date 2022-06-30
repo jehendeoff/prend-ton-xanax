@@ -5,7 +5,7 @@ const cloudflareBypasser = require("../puppeteer functions/cloudflare bypasser")
 puppeteer.use(StealthPlugin());
 const fs = require("fs");
 
-const cookiePath = __dirname + "/../cookies/animedao.json";
+const cookiePath = (process.env["appCookie"] ?? __dirname + "/../cookies/") + "animedao.json";
 var urlAnime = "https://animedao.to/anime/life-with-an-ordinary-guy-who-reincarnated-into-a-total-fantasy-knockout/";
 var animepath = __dirname + "/";
 
@@ -85,7 +85,7 @@ async function scrape ()  {
 	await fs.writeFileSync(cookiePath, JSON.stringify(cookies));
 
 	await browser.close();
-	res["path"] = res["name"].replace(/(?![A-Za-z0-9 ])./g, "") + " (SRC animedao)";
+	res["path"] = res["name"].replace(/(?![A-Za-z0-9 ])./g, "") + " (SRC " + __filename.replace(/\.js$/, "") + ")";
 
 	if (!fs.existsSync(animepath + res["path"] + "/")) fs.mkdirSync(animepath + res["path"] + "/");
 	fs.writeFileSync(animepath + res["path"] + "/config.json", JSON.stringify({

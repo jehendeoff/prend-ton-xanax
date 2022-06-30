@@ -1,10 +1,11 @@
-animePath: /home/jehende/anime/
-anime: 
+anime:
+  path: /home/jehende/anime/
   prefer:
-    language: vostfr #in lowercase
+    language: vostfr
 app:
   port: 10410
-downloader: 
+  cookie: /run/media/jehende/5d48aefd-cc0e-4c05-9b37-1fbf52bbbbbe/prend-ton-xanax/cookie/
+downloader:
   simultaneous: 2
 puppeteer:
   #chromePath: /run/media/jehende/5d48aefd-cc0e-4c05-9b37-1fbf52bbbbbe/prend-ton-xanax/node_modules/puppeteer/.local-chromium/linux-950341/chrome-linux/chrome

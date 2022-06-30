@@ -42,12 +42,9 @@ const app = http.createServer((req, res)=> {
 });
 
 const io = require("socket.io")(app);
+
+//SECTION download
 const download = io.of("/download");
-
-//downloader.ChangeEvent((message => {
-//	download.emit("message);
-//})
-
 setInterval(() => {
 	download.emit("status", downloader["DownloadList"]);
 }, 1000);
@@ -81,6 +78,7 @@ download.on("connect", socket => {
 	});
 	console.log("Socket connected");
 });
+//!SECTION
 
 module.exports = {
 	listen,

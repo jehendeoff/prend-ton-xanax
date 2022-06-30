@@ -6,7 +6,7 @@ puppeteer.use(StealthPlugin());
 const { DownloaderHelper } = require("node-downloader-helper");
 const fs = require("fs");
 
-const cookiePath = __dirname + "/../cookies/animedao.json";
+const cookiePath = (process.env["appCookie"] ?? __dirname + "/../cookies/") + "animedao.json";
 var urlAnime = "https://animedao.to/view/6661668038/";
 var animePath = __dirname  +"/";
 var fileNameEP = undefined;

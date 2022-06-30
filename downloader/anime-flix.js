@@ -6,7 +6,7 @@ puppeteer.use(StealthPlugin());
 const { DownloaderHelper } = require("node-downloader-helper");
 const fs = require("fs");
 
-const cookiePath = __dirname + "/../cookies/anime-flix.json";
+var cookiePath = (process.env["appCookie"] ?? __dirname + "/../cookies/") + "anime-flix.json";
 var urlAnime = "https://anime-flix.net/episodes/black-butler-saison-1-episode-1/";
 var animePath = __dirname  +"/";
 var fileNameEP = undefined;

@@ -4,7 +4,7 @@ const cloudflareBypasser = require("../puppeteer functions/cloudflare bypasser")
 puppeteer.use(StealthPlugin());
 const fs = require("fs");
 
-const cookiePath = __dirname + "/../cookies/anime-flix.json";
+const cookiePath = (process.env["appCookie"] ?? __dirname + "/../cookies/") + "anime-flix.json";
 var urlAnime = "https://anime-flix.net/series/skeleton-knight-in-another-world/";
 var animepath = __dirname + "/";
 
@@ -86,7 +86,7 @@ async function scrape ()  {
 	await fs.writeFileSync(cookiePath, JSON.stringify(cookies));
 
 	await browser.close();
-	res["path"] = res["name"].replace(/(?![A-Za-z0-9 ])./g, "") + " (SRC animeflix)";
+	res["path"] = res["name"].replace(/(?![A-Za-z0-9 ])./g, "") + " (SRC " + __filename.replace(/\.js$/, "") + ")";
 
 	if (!fs.existsSync(animepath + res["path"] + "/")) fs.mkdirSync(animepath + res["path"] + "/");
 	fs.writeFileSync(animepath + res["path"] + "/config.json", JSON.stringify({
