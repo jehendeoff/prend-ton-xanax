@@ -26,6 +26,12 @@ const app = http.createServer((req, res)=> {
 		res.end();
 		break;
 	}
+	case "/downloads":{
+		res.writeHead(200);
+		res.write(fs.readFileSync(__dirname + "/web/html/download list.html"));
+		res.end();
+		break;
+	}
 	default:{
 		res.writeHead(404);
 		res.end("");
