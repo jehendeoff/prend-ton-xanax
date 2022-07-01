@@ -45,6 +45,19 @@ async function scrape ()  {
 
 	});
 
+
+	//popup blocker
+	browser.on("targetcreated", async (target)=> {
+		if (target.type() === "page"){
+			const page = await target.page();
+			await page.goto("about:blank", {
+				timeout:0,
+				waitUntil: "load",
+			});
+			await page.close();
+		}
+	});
+
 	const page = await browser.newPage();
 	if (fs.existsSync(cookiePath)){
 		const cookiesString = fs.readFileSync(cookiePath, "utf-8");
@@ -52,11 +65,6 @@ async function scrape ()  {
 		await page.setCookie(...cookies);
 	}
 	
-	// browser.on("targetcreated", async (target)=>{
-	// 	const page = await target.page();
-	// 	console.log("Looking: closing a popup"); // TODO doesn't work
-	// 	if(page) page.close();
-	// });
 
 	process.send("Looking: Going to anime-flix");
 	await page.goto(urlAnime, {

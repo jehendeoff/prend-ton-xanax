@@ -51,12 +51,19 @@ async function scrape ()  {
 		const cookies = JSON.parse(cookiesString);
 		await page.setCookie(...cookies);
 	}
+
+	//popup blocker
+	browser.on("targetcreated", async (target)=> {
+		if (target.type() === "page"){
+			const page = await target.page();
+			await page.goto("about:blank", {
+				timeout:0,
+				waitUntil: "load",
+			});
+			await page.close();
+		}
+	});
 	
-	// browser.on("targetcreated", async (target)=>{
-	// 	const page = await target.page();
-	// 	console.log("Looking: closing a popup"); // TODO doesn't work
-	// 	if(page) page.close();
-	// });
 
 	process.send("Looking: Going to Animedao");
 	await page.goto(urlAnime, {
