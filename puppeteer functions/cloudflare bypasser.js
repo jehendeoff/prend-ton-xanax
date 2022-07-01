@@ -11,6 +11,10 @@ exports.cancelCloudflare = async (page) => {
 	return;
 };
 const hasCloudflare = async (page) => {
-	if (await page.title() === "Just a moment...") return true;
+	try {
+		if (await page.title() === "Just a moment...") return true;
+	} catch (error) {
+		return false;
+	}
 	return false;
 };
