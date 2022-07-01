@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en-en">
+
+<head>
+	<meta charset="utf-8">
+	<script crossorigin="anonymous" referrerpolicy="no-referrer"
+		src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.0/socket.io.js?version=4.4.0"></script>
+</head>
+
+<body>
+	<h1 id="loading">Loading, please wait.</h1>
+
+</body>
+<style>
+	html{
+		height: 100%
+	}
+	body{
+		margin: 0;
+		height: 100%;
+	}
+	* {
+		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+	}
+	.error{
+		color: #f22;
+	}
+	#loading{
+		height: 50px;
+		margin: 0;
+		padding: 20px 10px;
+	}
+	body.player{
+		background-color: #000;
+	}
+	body.player *{
+		display: none;
+	}
+	body.player>video{
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+	div.selector{
+		width: fit-content;
+		max-width: 80%;
+		float: left;
+		height: calc(100% - 50px - 20px * 2 );
+		overflow: scroll;
+	}
+	div.selector>div>a{
+		margin: 5px;
+		display: block;
+		font-size: smaller;
+		cursor: pointer;
+		white-space: nowrap;
+		overflow: clip;
+		text-overflow: ellipsis;
+	}
+	div.selector>div>a:nth-child(1){
+		font-size: medium;
+	}
+	div.selector>div:nth-child(odd){
+		background-color: rgba(0,0,0,0.2);
+	}
+	body>div{
+
+	}
+	body.show>div.selector{
+		width: 20%;
+	}
+	body>div.presentation {
+		width: auto;
+		float: right;
+	}
+	body.show>div.presentation{
+		width: 80%;
+	}
+	div.presentation > a {
+		display: block;
+	}
+	.tags {
+		font-style: italic;
+	}
+	body > div.presentation > div {
+		display: inline;
+		padding: 5px 10px;
+		border-radius: 2px;
+		border-width: 1px;
+		border-style: solid;
+		border-color: rgba(0, 0, 0, 0.2);
+		background-color: rgba(0, 0, 0, 0.2);
+		margin: 10px;
+	}
+	body>div.presentation>div.watchable{
+		
+	}
+	body>div.presentation>div.downloadable{
+		color: rgba(0,0,0,0.5);
+		background-color: rgba(0, 0, 0, 0.1);
+	}
+
+	
+	table{
+		border-collapse: collapse;
+	}
+	th{
+		width: max-content;
+		padding: 0px 3px;
+	}
+	th:nth-child(5){
+		background-color: #fbb;
+		cursor: pointer;
+	}
+	tr:nth-child(odd){
+		background-color: #bbb;
+	}
+	tr:nth-child(odd) > th:nth-child(5){
+		background-color: #f99;
+	}
+	tr:nth-child(1){
+		background-color: #444 ;
+		color: #fff;
+	}
+	tr:nth-child(1) > th:nth-child(5){
+		background-color: #444 ;
+	}
+
+	.wrapper{
+		display:grid;
+		grid-gap: 10px;
+		grid-template-columns: repeat(auto-fit, 200px);
+	}
+	.wrapper a {
+		text-align: center;
+		box-shadow: rgba(0, 0, 0, 0.2) 0px 8px 24px;
+		border-radius: 5px;
+		border-width: 2px;
+		border-style: solid;
+		border-color: rgba(0,0,0,0);
+		padding: 10px 5px;
+		font-size: xx-large;
+		cursor: pointer;
+	}
+	.wrapper a.downloaded{
+		cursor:not-allowed;
+		background-color: #bbb;
+	}
+	.errored{
+		color:#f22;
+	}
+	.finished{
+		color:#2f2;
+	}
+	.waiting{
+		color:#888;
+	}
+	.working{
+		animation-name: working;
+		animation-duration: 1s;
+		animation-timing-function: linear;
+		animation-iteration-count: infinite;
+	}
+	@keyframes working {
+		0% { color: #888; }
+		50% { color: #000; }
+		100% { color: #888; }
+	}
+	input[TYPE="text"] {
+		width: 400px;
+	}
+</style>
+<script>
+	const bod = document.body;
+	const extensionRegex = new RegExp("\.[0-9A-z]+?$")
+	if(typeof io === "undefined") {
+		document.getElementsByTagName("h1")[0].innerText="Socket.io wasn't able to load.";
+		throw new Error("Socket.io wasn't able to load");
+	}
+
+	// let lobby =io("/lobby", {
+	// 	rememberUpgrade : true,
+	// });
+	let download =io("/download", {
+		rememberUpgrade : true,
+	});
+	download.on("status", list => {
+		// console.log(list);
+		// [...tbody.children].filter((e,i)=> i>= 1).map(e => e.remove());
+		// function t (t){
+		// 	if (document.getElementById("tracer").children.length !== 0) [...document.getElementById("tracer").children[1].children]
+		// 	.forEach(e => {
+		// 		e.classList.remove(t)
+		// 	})
+
+
+		// 	const obj = list[t];
+		// 	let arr = Object.entries(obj);
+		// 	arr = arr.sort((c,d) =>{
+		// 		const a = c[1];
+		// 		const b = d[1];
+
+		// 		let i = 0;
+		// 		if (a.info > b.info) i+= 1
+		// 		if (a.info < b.info) i+= -1
+
+
+		// 		if (a.filename > b.filename) i+= 0.5
+		// 		if (a.filename < b.filename) i+= -0.5
+		// 		return i;
+		// 	})
+		// 	arr = arr.filter (e=> e[0] !== "size");
+		// 	arr.forEach(obj => {
+		// 		const downloadState = obj[1];
+		// 		const tr = document.createElement("tr");
+		// 		tbody.appendChild(tr);
+		// 		function thAppend(text){
+		// 			const th = document.createElement("th");
+		// 			th.innerText = text;
+		// 			th.className = t;
+		// 			tr.appendChild(th);
+		// 			return th;
+		// 		}
+		// 		thAppend(downloadState["info"] ? downloadState["info"]["anime"] ?? "" : "")
+		// 		thAppend(downloadState["filename"] ?? "");
+		// 		thAppend(downloadState["speed"] ?? "");
+		// 		const percent = (downloadState["percent"] ?? "").slice(0,5)
+		// 		thAppend(percent !== "" ? percent + "%" : "");
+		// 		const stop = thAppend("🗑️");
+		// 		if (downloadState["stopping"] !== true){
+		// 			stop.onclick = ()=> {
+		// 				download.emit("stop", obj[0].toString());
+		// 				tr.style.setProperty("color", "red");
+		// 				stop.innerText = "♻️";
+		// 				stop.onclick = ()=> {};
+		// 			}
+		// 		}else{
+		// 			stop.innerText = "♻️";
+		// 			stop.onclick = ()=> {};
+		// 		}
+
+		// 		if (document.getElementById("tracer").children.length !== 0){
+
+		// 			if (downloadState["info"] && downloadState["info"]["anime"] === document.getElementById("tracer").children[0].innerText){
+		// 				[...document.getElementById("tracer").children[1].children]
+		// 				.filter(e => e.hasAttribute("ep") && e.getAttribute("ep") === downloadState["info"]["ep"])
+		// 				.forEach(e => {
+		// 					e.classList.add(t)
+		// 				})
+
+		// 			}
+		// 		}
+
+
+
+		// 	})
+		// 	// for (const key in list[t]) {
+		// 	// 	if (key !== "size"){
+		// 	// 		// const downloadState = list[t][key];
+		// 	// 		// const tr = document.createElement("tr");
+		// 	// 		// tbody.appendChild(tr);
+		// 	// 		// function thAppend(text){
+		// 	// 		// 	const th = document.createElement("th");
+		// 	// 		// 	th.innerText = text;
+		// 	// 		// 	tr.appendChild(th);
+		// 	// 		// }
+		// 	// 		// thAppend(downloadState["filename"] ?? "");
+		// 	// 		// thAppend(downloadState["speed"] ?? "");
+		// 	// 		// const percent = (downloadState["percent"] ?? "").slice(0,5)
+		// 	// 		// thAppend(percent !== "" ? percent + "%" : "");
+		// 	// 	};
+		// 	// }
+		// }
+		// t("errored")
+		// t("working");
+		// t("waiting");
+		// t("finished")
+
+
+	});
+
+
+	// const br = document.createElement("br");
+	// bod.appendChild(br);
+
+
+	// const inputTracer = document.createElement("input");
+	// inputTracer.setAttribute("type", "text")
+	// inputTracer.value = "https://animedao.to/anime/le-portrait-de-petit-cossette/";
+	// bod.appendChild(inputTracer);
+
+	// const confirmTracer = document.createElement("input");
+	// confirmTracer.setAttribute("type", "submit")
+
+	download.on("connect", ()=> {
+		// confirmTracer.disabled = false;
+		// inputTracer.disabled = false;
+	})
+
+	// confirmTracer.onclick = ()=> {
+	// 	confirmTracer.disabled = true;
+	// 	inputTracer.disabled = true;
+	// 	download.emit("trace", {
+	// 		url: inputTracer.value,
+	// 		module: inputTracer.value.match(/https?:\/\/([^.]*)/)[1]
+	// 	})
+	// }
+	// bod.appendChild(confirmTracer);
+
+	// const br1 = document.createElement("br");
+	// bod.appendChild(br1);
+
+	// const div = document.createElement("div");
+	// div.setAttribute("id", "tracer")
+	// bod.appendChild(div);
+	download.on("tracer", m => {
+		// confirmTracer.disabled = false;
+		// inputTracer.disabled = false;
+		// m = JSON.parse(m),
+		// [...div.children].forEach(e => e.remove());
+
+		// const h1 = document.createElement("h1");
+		// h1.innerText = m.name;
+		// div.append(h1);
+		// const div2 = document.createElement("div");
+		// div2.className = "wrapper";
+		// div.append(div2);
+
+		// for (const key in m["ep"]) {
+		// 	const a = document.createElement("a");
+		// 	const PreText = key.toString().includes("-") ? "S" : "Episode";
+
+		// 	a.innerText = `${PreText} ${key.toString().includes("-") ? key.toString().replace("-", "EP") : key.toString()}`;
+		// 	//NOTE, this can be better (such as a separator for seasons)
+		// 	const ep = key.match(/[0-9., -]*/g)[0];
+		// 	a.setAttribute("ep", ep)
+		// 	if (m["ep"][key]["downloaded"] !==true){
+		// 		a.onclick = () => {
+		// 			download.emit("add", {url:m["ep"][key]["url"], module: m.module, filename: ep, path: m["path"], info: {anime: m.name, ep: ep}})
+		// 		}
+		// 	}else{
+		// 		a.className="downloaded"
+		// 	}
+		// 	div2.append(a);
+		// }
+	})
+	download.on("stop", console.log)
+
+	document.getElementById("loading").innerText = "Browse";
+
+	const selector = document.createElement("div");
+	selector.classList.add("selector");
+	bod.appendChild(selector);
+	const presentation = document.createElement("div");
+	presentation.classList.add("presentation");
+	presentation.innerText = "lorum ipsum";
+	bod.appendChild(presentation);
+
+	function addAnimeToSelector({
+		animeName="Unknown",
+		onclick=()=> {},
+		watched = 0,
+		available = 0,
+		downloadable=0,
+	}){
+		const div = document.createElement("div")
+		div.onclick = onclick;
+		const name = document.createElement("a");
+		name.innerText = animeName;
+		name.title = animeName
+		div.appendChild(name);
+
+		const details = document.createElement("a");
+		details.innerText = `${watched}/${available < downloadable ? `(${downloadable}) ` : ""}${available}`;
+		details.title = `watched: ${watched} ; watchable: ${available}`
+		div.appendChild(details);
+
+		selector.appendChild(div);
+	}
+
+
+	function show (animeObj= {
+		name:"Unknown",
+		files: [],
+		currentStatus: "Incomplete",
+		tags: ["Unknown"]
+	}){
+		console.log(animeObj);
+		bod.classList.add("show");
+		[...presentation.children].forEach(e => e.remove());
+		const name = document.createElement("h1");
+		name.innerText = animeObj["name"] ?? "Unknown";
+		presentation.appendChild(name);
+		if (animeObj["error"]){
+			const error = document.createElement("a");
+			error.classList.add("error");
+			error.innerText =animeObj["error"]; 
+			presentation.appendChild(error);
+		}
+
+		const tags = document.createElement("a");
+		tags.classList.add("tags")
+		if (animeObj["tags"]
+		&& Array.isArray(animeObj["tags"]))
+			tags.innerText = animeObj["tags"].join(", ");
+		else
+			tags.innerText = "Unknown";
+		presentation.appendChild(tags);
+
+		let season = false;
+		if (animeObj["files"]
+		&& Array.isArray(animeObj["files"])){
+			animeObj["files"].forEach(ep => {
+				if (ep.includes(" - ")){
+					season = true;
+				}
+			})
+		}
+		if (season === false){
+			const episode = document.createElement("h2");
+			episode.innerText = "Episodes"
+			presentation.appendChild(episode);
+
+			let toShow = [];
+			if (animeObj["currentEpisodes"]
+			&& Array.isArray(animeObj["currentEpisodes"])){
+				animeObj["currentEpisodes"].map (ep => {
+					if(ep.endsWith(" Final")){
+						return ep.replace(/ Final$/, "");
+					}
+					return ep;
+				})
+				.sort((a,b)=>parseInt(a)-parseInt(b))
+				.forEach(fileName => {
+					// console.log("downloadable", fileName)
+					toShow[fileName] = {
+						class: "downloadable",
+						file: undefined
+					}
+					
+				})
+			}
+			if (animeObj["files"]
+			&& Array.isArray(animeObj["files"])){
+				animeObj["files"]
+				.sort((a,b)=>parseInt(a.replace(extensionRegex, ""))-parseInt(b.replace(extensionRegex, "")))
+				.forEach(fileName => {
+					// console.log("watchable", fileName.replace(extensionRegex, ""))
+					toShow[fileName.replace(extensionRegex, "")] = {
+						class: "watchable",
+						file: fileName
+					}
+					
+				})
+			}
+			for (const i in toShow) {
+				const file = document.createElement("div");
+				file.classList.add(toShow[i]["class"] ?? "downloadable")
+				if ((toShow[i]["class"] ?? "downloadable" )=== "watchable"){
+					file.onclick = () => {
+						bod.classList.add("player");
+						const video = document.createElement("video");
+						video.src = `${window.location.origin}/video?file=${toShow[i]["file"]}&anime=${btoa(animeObj["view"])}`;
+						video.setAttribute("controls", true);
+						bod.appendChild(video);
+						video.requestFullscreen();
+					}
+				}else{
+
+				}
+				presentation.appendChild(file);
+
+				const a = document.createElement("a");
+				a.innerText = i;
+				file.appendChild(a);
+			}
+			
+			if (toShow.length === 0){
+				const files = document.createElement("a");
+				files.innerText = "None found"
+				presentation.appendChild(files);
+			}
+
+		}
+
+	}
+
+
+	let browse =io("/browse", {
+		rememberUpgrade : true,
+	});
+	let stats ={
+		ep: 0,
+		anime: 0,
+	};
+	browse.on("list", list => {
+		totalAnime ={
+			ep: 0,
+			anime: 0,
+		};
+		[...selector.children].forEach(e => e.remove());
+
+		list = JSON.parse(list);
+		console.log(list)
+		for (const animeName in list) {
+			totalAnime["anime"] +=1;
+			let animeObject = list[animeName];
+			animeObject.name = animeName
+			addAnimeToSelector({
+				animeName: animeName,
+				onclick: ()=>show(animeObject),
+				available: animeObject["files"]?.length,
+				downloadable: animeObject["currentEpisodes"]?.length
+			});
+			if (Array.isArray(animeObject.files)){
+				let episodes=[];
+				totalAnime["ep"] += animeObject.files.filter(file => {
+					if (file.endsWith(".json")
+					|| file.endsWith(".yml")) return false;
+
+					const fileNoExtension = file.replace(extensionRegex, "")
+					if (episodes.includes(fileNoExtension)) return false;
+					episodes.push(fileNoExtension);
+					return true;
+				}).length
+			}
+			//debugger
+		}
+	})
+	browse.emit("list")
+
+	setInterval(()=> {
+		document.title = `${totalAnime["anime"]} animes, and ${totalAnime["ep"]} episodes.`;
+	}, 200)
+</script>
+</html>

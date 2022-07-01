@@ -26,6 +26,35 @@ const app = http.createServer((req, res)=> {
 		res.end();
 		break;
 	}
+	case "/browse":{
+		res.writeHead(200);
+		res.write(fs.readFileSync(__dirname + "/web/html/browse.html"));
+		res.end();
+		break;
+	}
+	case "/video":{
+		if (url.searchParams.has("file")
+		&& url.searchParams.has("anime")){
+			const file = url.searchParams.get("file");
+			const anime = Buffer.from (url.searchParams.get("anime"), "base64").toString();
+			const path = global.config.anime.path + anime + "/" + file;
+			console.log(path);
+			if (fs.existsSync(path)){
+				res.writeHead(200);
+				res.write(fs.readFileSync(path));
+				res.end();
+			}else{
+				res.writeHead(400);
+				res.write("not found");
+				res.end();
+			}
+			return;
+		}
+		res.writeHead(400);
+		res.write("File ou anime search parameter missing.");
+		res.end();
+		break;
+	}
 	case "/downloads":{
 		res.writeHead(200);
 		res.write(fs.readFileSync(__dirname + "/web/html/download list.html"));
@@ -79,6 +108,61 @@ download.on("connect", socket => {
 	console.log("Socket connected");
 });
 //!SECTION
+
+
+//SECTION browse
+const browse = io.of("/browse");
+let AnimeCache = {};
+function refreshAnimeCache(){
+	fs.readdirSync(global.config.anime.path).filter(file => 
+		fs.statSync(global.config.anime.path + file).isDirectory()
+	)
+		.sort((a,b)=> {
+			return a.toLowerCase().localeCompare(b.toLowerCase());
+		})
+		.forEach(anime => {
+			const animeDir = global.config.anime.path + anime + "/";
+			let animeName = anime.replace(/ \(SRC [A-z]+\)/g, "");
+			if (AnimeCache[animeName] !== undefined) animeName = anime;
+
+			let module;
+			if (anime.match (/\(SRC ([A-z]+)\)/) !== null)
+				module = anime.match (/\(SRC ([A-z]+)\)/)[1];
+
+			let config = {};
+
+			if (fs.existsSync(animeDir + "config.json")){
+				try {
+					config = JSON.parse(fs.readFileSync(animeDir + "config.json"));
+				} catch (error) {
+					config.error = error.toString();
+				}
+			}else config.error = "No config file found.";
+
+			config["module"] = module;
+
+			config["view"] = anime;
+
+			config.files = fs.readdirSync(animeDir).filter(file => 
+				fs.statSync(animeDir+ file).isFile()
+			&& !["config.json", "config.yml"].includes(file)
+			);
+
+			AnimeCache[animeName] = config;
+		});
+}
+refreshAnimeCache();
+
+browse.on("connect", socket => {
+	socket.emit("message", "Welcome");
+	socket.on("list", () => {
+		refreshAnimeCache();
+		socket.emit("list", JSON.stringify(AnimeCache));
+	});
+});
+
+
+//!SECTION 
 
 module.exports = {
 	listen,
