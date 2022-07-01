@@ -46,6 +46,10 @@ async function scrape ()  {
 	});
 
 	const page = await browser.newPage();
+	page.on("console", msg => {
+		console[msg["_type"]](msg.args());
+	});
+	
 	if (fs.existsSync(cookiePath)){
 		const cookiesString = fs.readFileSync(cookiePath, "utf-8");
 		const cookies = JSON.parse(cookiesString);
