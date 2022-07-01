@@ -114,6 +114,7 @@ download.on("connect", socket => {
 const browse = io.of("/browse");
 let AnimeCache = {};
 function refreshAnimeCache(){
+	AnimeCache = {};
 	fs.readdirSync(global.config.anime.path).filter(file => 
 		fs.statSync(global.config.anime.path + file).isDirectory()
 	)
