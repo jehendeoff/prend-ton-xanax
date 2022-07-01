@@ -123,7 +123,7 @@ function refreshAnimeCache(){
 		})
 		.forEach(anime => {
 			const animeDir = global.config.anime.path + anime + "/";
-			let animeName = anime.replace(/ \(SRC [A-z]+\)/g, "");
+			let animeName = anime.replace(/ \(SRC [A-z0-9-+_]+\)/g, "");
 			if (AnimeCache[animeName] !== undefined) animeName = anime;
 
 			let module;
