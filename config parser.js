@@ -18,19 +18,22 @@ if (global.config.animePath !== undefined
 
 
 //ANCHOR make new config if none exists
-if (global.config.anime.path === undefined){
+if (global.config.anime.path === undefined
+|| global.config.anime.path === null){
 	global.config.anime.path = __dirname + "/anime/";
 	console.warn("Did not found any anime path in config, making one.\t(config.yml => anime.path)");
 	if (!fs.existsSync(global.config.anime.path)) 
 		fs.mkdirSync(global.config.anime.path);
 	updated = true;
 }
-if (global.config.app.port === undefined){
+if (global.config.app.port === undefined
+|| global.config.app.port === null){
 	global.config.app.port = 10410;
 	console.warn("Did not found any port in config, using 10410.\t(config.yml => app.port)");
 	updated = true;
 }
-if (global.config.app.cookie === undefined){
+if (global.config.app.cookie === undefined
+|| global.config.app.cookie === null){
 	global.config.app.cookie = __dirname + "/cookie/";
 	console.warn("Did not found any app cookie path in config, making one.\t(config.yml => app.cookie)");
 	if (!fs.existsSync(global.config.app.cookie)) 
