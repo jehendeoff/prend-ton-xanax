@@ -180,7 +180,7 @@
 </style>
 <script>
 	const bod = document.body;
-	const extensionRegex = new RegExp("\.[0-9A-z]+?$")
+	const extensionRegex = /\.[0-9A-z]+?$/;
 	if(typeof io === "undefined") {
 		document.getElementsByTagName("h1")[0].innerText="Socket.io wasn't able to load.";
 		throw new Error("Socket.io wasn't able to load");
