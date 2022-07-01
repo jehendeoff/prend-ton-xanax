@@ -121,6 +121,9 @@ async function scrape ()  {
 		console.clear = () => {
 			console.log("ptdr tu clear");
 		};
+		window.open = ()=> {
+			console.log("ptdr tu tentes une popup");
+		};
 		devtoolIsOpening = ()=> {};
 		console.log("ptdr tu clear");
 
