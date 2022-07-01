@@ -436,7 +436,8 @@
 
 		function displayEp(toShow,elem){
 			let worked = false;
-			for (const i in toShow) {
+			console.log(JSON.stringify(toShow, undefined, "    "))
+			Object.keys(toShow).sort((a,b)=> parseInt(a)-parseInt(b)).forEach((i)=> {
 				worked = true;
 				const file = document.createElement("div");
 				file.classList.add(toShow[i]["class"] ?? "downloadable")
@@ -457,7 +458,7 @@
 				const a = document.createElement("a");
 				a.innerText = i;
 				file.appendChild(a);
-			}
+			})
 			
 			if (worked === false){
 				const files = document.createElement("a");
@@ -475,7 +476,7 @@
 			episodesGrid.classList.add("EpGrid");
 			presentation.appendChild(episodesGrid)
 
-			let toShow = [];
+			let toShow = {};
 			if (animeObj["currentEpisodes"]
 			&& Array.isArray(animeObj["currentEpisodes"])){
 				animeObj["currentEpisodes"]
