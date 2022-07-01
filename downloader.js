@@ -116,7 +116,7 @@ function downloadEP (site, module, path, fileName, info){
 
 		DownloadList[current][where]["filename"] = fileName;
 		download.on("message", message => {
-			console.log(message);
+			if (process.env["debug"] === true) console.log(message);
 			if (message.includes(":") && !message.startsWith("Download: ")) DownloadList[current][where]["status"] = message;
 			if (typeof message !== "string") return;
 			if (message.startsWith ("Looking: ") && message.includes("F:")){
