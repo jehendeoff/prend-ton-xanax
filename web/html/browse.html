@@ -412,18 +412,62 @@
 			tags.innerText = "Unknown";
 		presentation.appendChild(tags);
 
-		let season = false;
+		let season = [];
 		if (animeObj["files"]
 		&& Array.isArray(animeObj["files"])){
 			animeObj["files"].forEach(ep => {
 				if (ep.includes(" - ")){
-					season = true;
+					if (!season.includes(ep.replace(/ -.*$/, "")))
+						season.push(ep.replace(/ -.*$/, ""));
 				}
 			})
 		}
-		if (season === false){
+		if (animeObj["currentEpisodes"]
+		&& Array.isArray(animeObj["currentEpisodes"])){
+			animeObj["currentEpisodes"].forEach(ep => {
+				if (ep.includes(" - ")){
+					if (!season.includes(ep.replace(/ -.*$/, "")))
+						season.push(ep.replace(/ -.*$/, ""));
+				}
+			})
+		}
+
+		function displayEp(toShow,elem){
+			let worked = false;
+			for (const i in toShow) {
+				worked = true;
+				const file = document.createElement("div");
+				file.classList.add(toShow[i]["class"] ?? "downloadable")
+				if ((toShow[i]["class"] ?? "downloadable" )=== "watchable"){
+					file.onclick = () => {
+						bod.classList.add("player");
+						const video = document.createElement("video");
+						video.src = `${window.location.origin}/video?file=${toShow[i]["file"]}&anime=${btoa(animeObj["view"])}`;
+						video.setAttribute("controls", true);
+						bod.appendChild(video);
+						video.requestFullscreen();
+					}
+				}else{
+
+				}
+				elem.appendChild(file);
+
+				const a = document.createElement("a");
+				a.innerText = i;
+				file.appendChild(a);
+			}
+			
+			if (worked === false){
+				const files = document.createElement("a");
+				files.innerText = "None found"
+				presentation.appendChild(files);
+			}
+		}
+		
+		if (season.length ===0) season.push (-1);
+		season.forEach(season => {
 			const episode = document.createElement("h2");
-			episode.innerText = "Episodes"
+			episode.innerText = season ===-1 ?"Episodes" : "Saison " + season;
 			presentation.appendChild(episode);
 			const episodesGrid = document.createElement("div");
 			episodesGrid.classList.add("EpGrid");
@@ -432,10 +476,19 @@
 			let toShow = [];
 			if (animeObj["currentEpisodes"]
 			&& Array.isArray(animeObj["currentEpisodes"])){
-				animeObj["currentEpisodes"].map (ep => {
+				animeObj["currentEpisodes"]
+				.filter(ep => 
+					season === -1
+					||ep.startsWith(season + " - ")
+				)
+				.map (ep => {
 					if(ep.endsWith(" Final")){
 						return ep.replace(/ Final$/, "");
 					}
+					return ep;
+				})
+				.map(ep => {
+					if (season !== -1) return ep.replace(season + " - ", "");
 					return ep;
 				})
 				.sort((a,b)=>parseInt(a)-parseInt(b))
@@ -451,6 +504,14 @@
 			if (animeObj["files"]
 			&& Array.isArray(animeObj["files"])){
 				animeObj["files"]
+				.filter(ep => 
+					season === -1
+					||ep.startsWith(season + " - ")
+				)
+				.map(ep => {
+					if (season !== -1) return ep.replace(season + " - ", "");
+					return ep;
+				})
 				.sort((a,b)=>parseInt(a.replace(extensionRegex, ""))-parseInt(b.replace(extensionRegex, "")))
 				.forEach(fileName => {
 					// console.log("watchable", fileName.replace(extensionRegex, ""))
@@ -461,35 +522,9 @@
 					
 				})
 			}
-			for (const i in toShow) {
-				const file = document.createElement("div");
-				file.classList.add(toShow[i]["class"] ?? "downloadable")
-				if ((toShow[i]["class"] ?? "downloadable" )=== "watchable"){
-					file.onclick = () => {
-						bod.classList.add("player");
-						const video = document.createElement("video");
-						video.src = `${window.location.origin}/video?file=${toShow[i]["file"]}&anime=${btoa(animeObj["view"])}`;
-						video.setAttribute("controls", true);
-						bod.appendChild(video);
-						video.requestFullscreen();
-					}
-				}else{
+			displayEp(toShow, episodesGrid)
+		})
 
-				}
-				episodesGrid.appendChild(file);
-
-				const a = document.createElement("a");
-				a.innerText = i;
-				file.appendChild(a);
-			}
-			
-			if (toShow.length === 0){
-				const files = document.createElement("a");
-				files.innerText = "None found"
-				presentation.appendChild(files);
-			}
-
-		}
 
 	}
 
