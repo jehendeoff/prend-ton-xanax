@@ -48,7 +48,7 @@ async function scrape ()  {
 
 	const page = await browser.newPage();
 	page.on("console", msg => {
-		console[msg["_type"]](msg.args());
+		if (process.env["debug"] === "true") console[msg["_type"]](msg.args());
 	});
 
 	if (fs.existsSync(cookiePath)){

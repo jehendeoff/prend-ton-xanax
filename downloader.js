@@ -71,6 +71,7 @@ function downloadEP (site, module, path, fileName, info){
 			chromePath: global.config.puppeteer?.chromePath ?? "",
 			preferLanguage:  global.config.anime?.prefer?.language ?? "",
 			appCookie: global.config.app.cookie,
+			debug: process.env["debug"],
 		});
 		function error(){
 			if (current !== "errored"){
