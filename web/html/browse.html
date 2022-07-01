@@ -379,7 +379,7 @@
 
 		const details = document.createElement("a");
 		details.innerText = `${watched}/${available < downloadable ? `(${downloadable}) ` : ""}${available}`;
-		details.title = `watched: ${watched} ; watchable: ${available}`
+		details.title = `watched: ${watched} ; watchable: ${available} ; downloadable: ${downloadable}`
 		div.appendChild(details);
 
 		selector.appendChild(div);
