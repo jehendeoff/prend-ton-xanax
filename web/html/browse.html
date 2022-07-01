@@ -489,10 +489,10 @@
 					}
 					return ep;
 				})
-				.map(ep => {
-					if (season !== -1) return ep.replace(season + " - ", "");
-					return ep;
-				})
+				// .map(ep => { //TODO break with video player using **this** to play the video, maybe including another field would work?
+				// 	if (season !== -1) return ep.replace(season + " - ", "");
+				// 	return ep;
+				// })
 				.sort((a,b)=>parseInt(a)-parseInt(b))
 				.forEach(fileName => {
 					// console.log("downloadable", fileName)
@@ -510,10 +510,10 @@
 					season === -1
 					||ep.startsWith(season + " - ")
 				)
-				.map(ep => {
-					if (season !== -1) return ep.replace(season + " - ", "");
-					return ep;
-				})
+				// .map(ep => {
+				// 	if (season !== -1) return ep.replace(season + " - ", "");
+				// 	return ep;
+				// })
 				.sort((a,b)=>parseInt(a.replace(extensionRegex, ""))-parseInt(b.replace(extensionRegex, "")))
 				.forEach(fileName => {
 					// console.log("watchable", fileName.replace(extensionRegex, ""))
