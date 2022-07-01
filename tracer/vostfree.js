@@ -63,7 +63,7 @@ async function scrape ()  {
 		return resClient;
 	}, now, urlAnime);
 	await browser.close();
-	res["path"] = res["name"].replace(/(?![A-Za-z0-9 ])./g, "") + " (SRC " + __filename.replace(/.*\//g, "").replace(/\.js$/, "") + ")";
+	res["path"] = res["name"].replace(/(?![A-Za-z0-9 ])./g, "") + " (SRC " + __filename.replace(/.*[/\\]/g, "").replace(/\.js$/, "") + ")";
 
 	if (!fs.existsSync(animepath + res["path"] + "/")) fs.mkdirSync(animepath + res["path"] + "/");
 	fs.writeFileSync(animepath + res["path"] + "/config.json", JSON.stringify({

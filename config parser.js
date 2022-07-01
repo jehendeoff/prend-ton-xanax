@@ -47,7 +47,21 @@ if (!fs.existsSync(global.config.anime.path)) throw new Error("Anime path is una
 if (!global.config.puppeteer?.chromePath){
 	if (!global.config.puppeteer) global.config.puppeteer = {};
 	const localChromeium =  __dirname+"/node_modules/puppeteer/.local-chromium/";
-	const version = fs.readdirSync(localChromeium).filter(file => fs.statSync(localChromeium+file).isDirectory())[0] + "/";
+	const version = fs.readdirSync(localChromeium).filter(file => 
+		fs.statSync(localChromeium+file).isDirectory() 
+		&& fs.readdirSync(localChromeium+file).filter(folder => folder.includes("chrome")).length >0
+	)[0] + "/";
 	const os = fs.readdirSync(localChromeium + version).filter(file => fs.statSync(localChromeium+version+file).isDirectory())[0] + "/";
-	global.config.puppeteer.chromePath =localChromeium + version + os + "chrome";
+	const chromeExec = fs.readdirSync(localChromeium + version + os)
+		.filter(file => file.replace(/.[A-z0-9]+?$/, "") === "chrome")
+		.sort((a,b)=>{
+			const aExe = a.endsWith(".exe");
+			const bExe = b.endsWith(".exe");
+			if (aExe === true 
+		&& bExe === true) return 0;
+			if (aExe === true) return -1;
+			if (bExe === true) return 1;
+			return 0;
+		});
+	global.config.puppeteer.chromePath =localChromeium + version + os + chromeExec[0];
 } 
