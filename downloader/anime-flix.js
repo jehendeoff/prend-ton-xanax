@@ -46,6 +46,13 @@ async function scrape ()  {
 	});
 
 
+	const page = await browser.newPage();
+	if (fs.existsSync(cookiePath)){
+		const cookiesString = fs.readFileSync(cookiePath, "utf-8");
+		const cookies = JSON.parse(cookiesString);
+		await page.setCookie(...cookies);
+	}
+
 	//popup blocker
 	browser.on("targetcreated", async (target)=> {
 		if (target.type() === "page"){
@@ -57,13 +64,6 @@ async function scrape ()  {
 			await page.close();
 		}
 	});
-
-	const page = await browser.newPage();
-	if (fs.existsSync(cookiePath)){
-		const cookiesString = fs.readFileSync(cookiePath, "utf-8");
-		const cookies = JSON.parse(cookiesString);
-		await page.setCookie(...cookies);
-	}
 	
 
 	process.send("Looking: Going to anime-flix");
