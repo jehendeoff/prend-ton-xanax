@@ -68,6 +68,7 @@ async function scrape ()  {
 			let name = e.title;
 			names.forEach(n => name = name.replace(new RegExp(" ?" + n + " ?"), ""));
 			name = name.match(/[0-9.,]*(?: Final|)$/g)[0].match(/[0-9.,]*/)[0];
+			if (name ==="") name = e.title;
 			resClient["ep"][name] = {
 				url : e.href,
 
@@ -85,7 +86,7 @@ async function scrape ()  {
 	await fs.writeFileSync(cookiePath, JSON.stringify(cookies));
 
 	await browser.close();
-	res["path"] = res["name"].replace(/(?![A-Za-z0-9 ])./g, "") + " (SRC " + __filename.replace(/\.js$/, "") + ")";
+	res["path"] = res["name"].replace(/(?![A-Za-z0-9 ])./g, "") + " (SRC " + __filename.replace(/.*\//g, "").replace(/\.js$/, "") + ")";
 
 	if (!fs.existsSync(animepath + res["path"] + "/")) fs.mkdirSync(animepath + res["path"] + "/");
 	fs.writeFileSync(animepath + res["path"] + "/config.json", JSON.stringify({
