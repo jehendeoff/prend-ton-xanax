@@ -79,10 +79,16 @@
 	div.presentation > a {
 		display: block;
 	}
+
 	.tags {
 		font-style: italic;
 	}
-	body > div.presentation > div {
+
+	body>div.presentation>div.EpGrid{
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+	}
+	body > div.presentation > div.EpGrid>div {
 		display: inline flow-root;
 		padding: 5px 10px;
 		border-radius: 2px;
@@ -92,10 +98,10 @@
 		background-color: rgba(0, 0, 0, 0.2);
 		margin: 10px;
 	}
-	body>div.presentation>div.watchable{
+	body>div.presentation>div.EpGrid>div.watchable{
 		
 	}
-	body>div.presentation>div.downloadable{
+	body>div.presentation>div.EpGrid>downloadable{
 		color: rgba(0,0,0,0.5);
 		background-color: rgba(0, 0, 0, 0.1);
 	}
@@ -419,6 +425,9 @@
 			const episode = document.createElement("h2");
 			episode.innerText = "Episodes"
 			presentation.appendChild(episode);
+			const episodesGrid = document.createElement("div");
+			episodesGrid.classList.add("EpGrid");
+			presentation.appendChild(episodesGrid)
 
 			let toShow = [];
 			if (animeObj["currentEpisodes"]
@@ -467,7 +476,7 @@
 				}else{
 
 				}
-				presentation.appendChild(file);
+				episodesGrid.appendChild(file);
 
 				const a = document.createElement("a");
 				a.innerText = i;
