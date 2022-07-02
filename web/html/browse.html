@@ -193,6 +193,12 @@
 		rememberUpgrade : true,
 	});
 	download.on("status", list => {
+		["working", "waiting", "errored", "finished"].forEach(Class => {
+			[...document.getElementsByClassName(Class)].for(elem => {
+				elem.classList.remove(Class);
+			});
+		});
+
 		for (const type in list) {
 			for (const key in list[type]) {
 				if (key === "size") continue;
