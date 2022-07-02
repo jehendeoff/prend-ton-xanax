@@ -456,7 +456,7 @@
 						if (url === ""){
 							return alert("This anime doesn not have a url");
 						}
-						function download (){
+						function downloadEpisode (){
 							if (m["ep"][i] !== undefined
 								&& m["ep"][i]["downloaded"] !== true){
 									download.emit("add", {
@@ -472,7 +472,7 @@
 								}
 						}
 						file.setAttribute("disabled", true)
-						file.classList("downloading")
+						file.classList.add("downloading")
 
 						if (!traced){
 							download.emit("trace", {
@@ -483,9 +483,9 @@
 							download.once("tracer", m => {
 								m = JSON.parse(m);
 								traced = m;
-								download();
+								downloadEpisode();
 							});
-						}else download()
+						}else downloadEpisode()
 
 					}
 				}
