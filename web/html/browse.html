@@ -434,9 +434,9 @@
 			})
 		}
 
-		function displayEp(toShow,elem){
+		function displayEp(toShow,elem, url){
 			let worked = false;
-			console.log(JSON.stringify(toShow, undefined, "    "))
+			//console.log(JSON.stringify(toShow, undefined, "    "))
 			Object.keys(toShow).sort((a,b)=> parseInt(a)-parseInt(b)).forEach((i)=> {
 				worked = true;
 				const file = document.createElement("div");
@@ -451,7 +451,34 @@
 						video.requestFullscreen();
 					}
 				}else{
+					file.onclick = ()=> {
+						file.setAttribute("disabled", true)
+						file.classList("downloading")
+						if (url === ""){
+							return alert("This anime doesn not have a url");
+						}
+						download.emit("trace", {
+							url,
+							module: url.match(/https?:\/\/([^.]*)/)[1]
+						})
 
+						download.once("tracer", m => {
+							m = JSON.parse(m);
+							if (m["ep"][i] !== undefined
+							&& m["ep"][i]["downloaded"] !== true){
+								download.emit("add", {
+									url:m["ep"][i]["url"], 
+									module: url.match(/https?:\/\/([^.]*)/)[1], 
+									filename: i, 
+									path: m["path"], 
+									info: {
+										anime: m.name, 
+										ep: i
+									}
+								})
+							}
+						});
+					}
 				}
 				elem.appendChild(file);
 
@@ -519,7 +546,7 @@
 					
 				})
 			}
-			displayEp(toShow, episodesGrid)
+			displayEp(toShow, episodesGrid, animeObj["link"] ??"")
 		})
 
 
@@ -572,7 +599,11 @@
 	browse.emit("list")
 
 	setInterval(()=> {
+		try {
 		document.title = `${totalAnime["anime"]} animes, and ${totalAnime["ep"]} episodes.`;
+		} catch (error) {
+		document.title = `Refreshing...`;
+		}
 	}, 200)
 </script>
 </html>
