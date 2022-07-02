@@ -1,0 +1,202 @@
+html {
+	height: 100%
+}
+
+body {
+	margin: 0;
+	height: 100%;
+}
+
+* {
+	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
+}
+
+.error {
+	color: #f22;
+}
+
+#loading {
+	height: 50px;
+	margin: 0;
+	padding: 20px 10px;
+}
+
+body.player {
+	background-color: #000;
+}
+
+body.player * {
+	display: none;
+}
+
+body.player>video {
+	display: block;
+	width: 100%;
+	height: 100%;
+}
+
+div.selector {
+	width: fit-content;
+	max-width: 80%;
+	float: left;
+	height: calc(100% - 50px - 20px * 2);
+	overflow: scroll;
+}
+
+div.selector>div>a {
+	margin: 5px;
+	display: block;
+	font-size: smaller;
+	cursor: pointer;
+	white-space: nowrap;
+	overflow: clip;
+	text-overflow: ellipsis;
+}
+
+div.selector>div>a:nth-child(1) {
+	font-size: medium;
+}
+
+div.selector>div:nth-child(odd) {
+	background-color: rgba(0, 0, 0, 0.2);
+}
+
+body>div {}
+
+body.show>div.selector {
+	width: 20%;
+}
+
+body>div.presentation {
+	width: auto;
+	float: right;
+}
+
+body.show>div.presentation {
+	width: 80%;
+	overflow: scroll;
+	height: calc(100% - 50px - 20px * 2);
+}
+
+div.presentation>a {
+	display: block;
+}
+
+.tags {
+	font-style: italic;
+}
+
+body>div.presentation>div.EpGrid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+}
+
+body>div.presentation>div.EpGrid>div {
+	display: inline flow-root;
+	padding: 5px 10px;
+	border-radius: 2px;
+	border-width: 1px;
+	border-style: solid;
+	border-color: rgba(0, 0, 0, 0.2);
+	background-color: rgba(0, 0, 0, 0.2);
+	margin: 10px;
+}
+
+body>div.presentation>div.EpGrid>div.watchable {}
+
+body>div.presentation>div.EpGrid>div.downloadable {
+	color: rgba(0, 0, 0, 0.5);
+	background-color: rgba(0, 0, 0, 0.1);
+}
+
+
+table {
+	border-collapse: collapse;
+}
+
+th {
+	width: max-content;
+	padding: 0px 3px;
+}
+
+th:nth-child(5) {
+	background-color: #fbb;
+	cursor: pointer;
+}
+
+tr:nth-child(odd) {
+	background-color: #bbb;
+}
+
+tr:nth-child(odd)>th:nth-child(5) {
+	background-color: #f99;
+}
+
+tr:nth-child(1) {
+	background-color: #444;
+	color: #fff;
+}
+
+tr:nth-child(1)>th:nth-child(5) {
+	background-color: #444;
+}
+
+.wrapper {
+	display: grid;
+	grid-gap: 10px;
+	grid-template-columns: repeat(auto-fit, 200px);
+}
+
+.wrapper a {
+	text-align: center;
+	box-shadow: rgba(0, 0, 0, 0.2) 0px 8px 24px;
+	border-radius: 5px;
+	border-width: 2px;
+	border-style: solid;
+	border-color: rgba(0, 0, 0, 0);
+	padding: 10px 5px;
+	font-size: xx-large;
+	cursor: pointer;
+}
+
+.wrapper a.downloaded {
+	cursor: not-allowed;
+	background-color: #bbb;
+}
+
+.errored {
+	color: #f22;
+}
+
+.finished {
+	color: #2f2;
+}
+
+.waiting {
+	color: #888;
+}
+
+.working {
+	animation-name: working;
+	animation-duration: 1s;
+	animation-timing-function: linear;
+	animation-iteration-count: infinite;
+}
+
+@keyframes working {
+	0% {
+		color: #888;
+	}
+
+	50% {
+		color: #000;
+	}
+
+	100% {
+		color: #888;
+	}
+}
+
+input[TYPE="text"] {
+	width: 400px;
+}

@@ -20,6 +20,36 @@ const app = http.createServer((req, res)=> {
 	const url = new URL(req.url, `http://${req.headers["host"]}${req.url ?? "/"}`);
 
 	switch (url.pathname) {
+	
+	case (url.pathname.startsWith("/css/") ? url.pathname : ""):{
+		const file = url.pathname.replace("/css/", "");
+		if (file !== ""
+		&& fs.existsSync(__dirname + "/web/css/" + file)){
+			res.writeHead(200);
+			res.write(fs.readFileSync(__dirname + "/web/css/" + file));
+			res.end();
+			break;
+		}else{
+			res.writeHead(404);
+			res.end("");
+		}
+		break;
+	}
+
+	case (url.pathname.startsWith("/js/") ? url.pathname : ""):{
+		const file = url.pathname.replace("/js/", "");
+		if (file !== ""
+		&& fs.existsSync(__dirname + "/web/js/" + file)){
+			res.writeHead(200);
+			res.write(fs.readFileSync(__dirname + "/web/js/" + file));
+			res.end();
+			break;
+		}else{
+			res.writeHead(404);
+			res.end("");
+		}
+		break;
+	}
 	case "/":{
 		res.writeHead(200);
 		res.write(fs.readFileSync(__dirname + "/web/html/index.html"));
