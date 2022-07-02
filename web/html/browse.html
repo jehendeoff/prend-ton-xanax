@@ -194,7 +194,7 @@
 	});
 	download.on("status", list => {
 		["working", "waiting", "errored", "finished"].forEach(Class => {
-			[...document.getElementsByClassName(Class)].for(elem => {
+			[...document.getElementsByClassName(Class)].forEach(elem => {
 				elem.classList.remove(Class);
 			});
 		});
@@ -212,7 +212,7 @@
 					const filtered = children.filter (child => child.children[0].innerText === show);
 					if (filtered.length >0){
 						filtered.forEach(ep => {
-							ep.classList.add(type);
+							ep.classList.add(type !== "finished" ? type : "downloaded");
 							ep.setAttribute("disabled", true);
 						})
 					}
@@ -221,166 +221,16 @@
 			}
 		}
 		
-		debugger;
-		// console.log(list);
-		// [...tbody.children].filter((e,i)=> i>= 1).map(e => e.remove());
-		// function t (t){
-		// 	if (document.getElementById("tracer").children.length !== 0) [...document.getElementById("tracer").children[1].children]
-		// 	.forEach(e => {
-		// 		e.classList.remove(t)
-		// 	})
-
-
-		// 	const obj = list[t];
-		// 	let arr = Object.entries(obj);
-		// 	arr = arr.sort((c,d) =>{
-		// 		const a = c[1];
-		// 		const b = d[1];
-
-		// 		let i = 0;
-		// 		if (a.info > b.info) i+= 1
-		// 		if (a.info < b.info) i+= -1
-
-
-		// 		if (a.filename > b.filename) i+= 0.5
-		// 		if (a.filename < b.filename) i+= -0.5
-		// 		return i;
-		// 	})
-		// 	arr = arr.filter (e=> e[0] !== "size");
-		// 	arr.forEach(obj => {
-		// 		const downloadState = obj[1];
-		// 		const tr = document.createElement("tr");
-		// 		tbody.appendChild(tr);
-		// 		function thAppend(text){
-		// 			const th = document.createElement("th");
-		// 			th.innerText = text;
-		// 			th.className = t;
-		// 			tr.appendChild(th);
-		// 			return th;
-		// 		}
-		// 		thAppend(downloadState["info"] ? downloadState["info"]["anime"] ?? "" : "")
-		// 		thAppend(downloadState["filename"] ?? "");
-		// 		thAppend(downloadState["speed"] ?? "");
-		// 		const percent = (downloadState["percent"] ?? "").slice(0,5)
-		// 		thAppend(percent !== "" ? percent + "%" : "");
-		// 		const stop = thAppend("🗑️");
-		// 		if (downloadState["stopping"] !== true){
-		// 			stop.onclick = ()=> {
-		// 				download.emit("stop", obj[0].toString());
-		// 				tr.style.setProperty("color", "red");
-		// 				stop.innerText = "♻️";
-		// 				stop.onclick = ()=> {};
-		// 			}
-		// 		}else{
-		// 			stop.innerText = "♻️";
-		// 			stop.onclick = ()=> {};
-		// 		}
-
-		// 		if (document.getElementById("tracer").children.length !== 0){
-
-		// 			if (downloadState["info"] && downloadState["info"]["anime"] === document.getElementById("tracer").children[0].innerText){
-		// 				[...document.getElementById("tracer").children[1].children]
-		// 				.filter(e => e.hasAttribute("ep") && e.getAttribute("ep") === downloadState["info"]["ep"])
-		// 				.forEach(e => {
-		// 					e.classList.add(t)
-		// 				})
-
-		// 			}
-		// 		}
-
-
-
-		// 	})
-		// 	// for (const key in list[t]) {
-		// 	// 	if (key !== "size"){
-		// 	// 		// const downloadState = list[t][key];
-		// 	// 		// const tr = document.createElement("tr");
-		// 	// 		// tbody.appendChild(tr);
-		// 	// 		// function thAppend(text){
-		// 	// 		// 	const th = document.createElement("th");
-		// 	// 		// 	th.innerText = text;
-		// 	// 		// 	tr.appendChild(th);
-		// 	// 		// }
-		// 	// 		// thAppend(downloadState["filename"] ?? "");
-		// 	// 		// thAppend(downloadState["speed"] ?? "");
-		// 	// 		// const percent = (downloadState["percent"] ?? "").slice(0,5)
-		// 	// 		// thAppend(percent !== "" ? percent + "%" : "");
-		// 	// 	};
-		// 	// }
-		// }
-		// t("errored")
-		// t("working");
-		// t("waiting");
-		// t("finished")
 
 
 	});
 
-
-	// const br = document.createElement("br");
-	// bod.appendChild(br);
-
-
-	// const inputTracer = document.createElement("input");
-	// inputTracer.setAttribute("type", "text")
-	// inputTracer.value = "https://animedao.to/anime/le-portrait-de-petit-cossette/";
-	// bod.appendChild(inputTracer);
-
-	// const confirmTracer = document.createElement("input");
-	// confirmTracer.setAttribute("type", "submit")
 
 	download.on("connect", ()=> {
 		// confirmTracer.disabled = false;
 		// inputTracer.disabled = false;
 	})
 
-	// confirmTracer.onclick = ()=> {
-	// 	confirmTracer.disabled = true;
-	// 	inputTracer.disabled = true;
-	// 	download.emit("trace", {
-	// 		url: inputTracer.value,
-	// 		module: inputTracer.value.match(/https?:\/\/([^.]*)/)[1]
-	// 	})
-	// }
-	// bod.appendChild(confirmTracer);
-
-	// const br1 = document.createElement("br");
-	// bod.appendChild(br1);
-
-	// const div = document.createElement("div");
-	// div.setAttribute("id", "tracer")
-	// bod.appendChild(div);
-	download.on("tracer", m => {
-		// confirmTracer.disabled = false;
-		// inputTracer.disabled = false;
-		// m = JSON.parse(m),
-		// [...div.children].forEach(e => e.remove());
-
-		// const h1 = document.createElement("h1");
-		// h1.innerText = m.name;
-		// div.append(h1);
-		// const div2 = document.createElement("div");
-		// div2.className = "wrapper";
-		// div.append(div2);
-
-		// for (const key in m["ep"]) {
-		// 	const a = document.createElement("a");
-		// 	const PreText = key.toString().includes("-") ? "S" : "Episode";
-
-		// 	a.innerText = `${PreText} ${key.toString().includes("-") ? key.toString().replace("-", "EP") : key.toString()}`;
-		// 	//NOTE, this can be better (such as a separator for seasons)
-		// 	const ep = key.match(/[0-9., -]*/g)[0];
-		// 	a.setAttribute("ep", ep)
-		// 	if (m["ep"][key]["downloaded"] !==true){
-		// 		a.onclick = () => {
-		// 			download.emit("add", {url:m["ep"][key]["url"], module: m.module, filename: ep, path: m["path"], info: {anime: m.name, ep: ep}})
-		// 		}
-		// 	}else{
-		// 		a.className="downloaded"
-		// 	}
-		// 	div2.append(a);
-		// }
-	})
 	download.on("stop", console.log)
 
 	document.getElementById("loading").innerText = "Browse";
