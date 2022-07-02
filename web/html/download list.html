@@ -171,7 +171,7 @@
 	download.on("tracer", m => {
 		confirmTracer.disabled = false;
 		inputTracer.disabled = false;
-		m = JSON.parse(m),
+		if (m["ok"] !== true) alert ("Error while fetching episode : " + m.toString() );
 		[...div.children].forEach(e => e.remove());
 
 		const h1 = document.createElement("h1");

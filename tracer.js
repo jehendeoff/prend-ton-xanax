@@ -16,7 +16,7 @@ function trace (site, module, ){
 		download.send("look\r\n");
 		if(global.config.anime.path) download.send("animepath\r\n" + global.config.anime.path);
 
-		download.on("message", m => res(m));
+		download.on("message", m => res(JSON.parse(m)));
 		download.on("error", () => {
 			console.error("could not talk to worker");
 		});

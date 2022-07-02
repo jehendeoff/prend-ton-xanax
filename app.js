@@ -121,8 +121,12 @@ download.on("connect", socket => {
 	});
 	socket.on("trace", obj => {
 		tracer.trace(obj.url, obj.module).then(result => {
+			result.ok = true;
 			socket.emit("tracer", result);
-		}).catch(console.error);
+		}).catch(error => {
+			error.ok= false;
+			socket.emit("tracer", error);
+		});
 	});
 	socket.on("stop", id => {
 		if (typeof id !== "string") return socket.emit("stop", "ID invlid");
