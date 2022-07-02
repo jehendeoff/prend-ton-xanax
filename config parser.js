@@ -40,6 +40,11 @@ if (global.config.app.cookie === undefined
 		fs.mkdirSync(global.config.app.cookie);
 	updated = true;
 }
+if (global.config.app["localhost?"] === undefined){
+	console.warn("Did not found if you wanted to run only on localhost, defaulting to true.\t(config.yml => app.localhost?)");
+	global.config.app["localhost?"] = true;
+	updated = true;
+}
 
 
 if (updated === true) fs.writeFileSync(configPath, yaml.stringify(global.config));

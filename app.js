@@ -2,7 +2,7 @@ const http = require("http");
 const fs = require("fs");
 
 function listen (port){
-	app.listen(port, "localhost");
+	app.listen(port, global.config.app["localhost?"] !== false ? "localhost" : undefined);
 }
 function event ([...args]){
 	io.emit(args);
