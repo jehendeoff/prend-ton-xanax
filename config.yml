@@ -1,11 +1,8 @@
 anime:
-  path: /home/jehende/anime/
   prefer:
     language: vostfr
 app:
   port: 10410
-  localhost?: false
-  cookie: /run/media/jehende/5d48aefd-cc0e-4c05-9b37-1fbf52bbbbbe/prend-ton-xanax/cookie/
 downloader:
   simultaneous: 2
 puppeteer:
