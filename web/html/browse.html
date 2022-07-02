@@ -193,6 +193,29 @@
 		rememberUpgrade : true,
 	});
 	download.on("status", list => {
+		for (const type in list) {
+			for (const key in list[type]) {
+				if (key === "size") continue;
+				const element = list[type][key];
+
+				const name = element["info"]?.anime;
+				const show = element["info"]?.show ?? element["info"]?.ep;
+				if (document.querySelector("body > div.presentation > h1") !== null
+				&& document.querySelector("body > div.presentation > h1").innerText === name){
+					const children = [...document.querySelector("body > div.presentation > div").children];
+					const filtered = children.filter (child => child.children[0].innerText === show);
+					if (filtered.length >0){
+						filtered.forEach(ep => {
+							ep.classList.add(type);
+							ep.setAttribute("disabled", true);
+						})
+					}
+				}
+
+			}
+		}
+		
+		debugger;
 		// console.log(list);
 		// [...tbody.children].filter((e,i)=> i>= 1).map(e => e.remove());
 		// function t (t){
@@ -434,7 +457,7 @@
 			})
 		}
 
-		function displayEp(toShow,elem, url){
+		function displayEp(toShow,elem, url, name){
 			let worked = false;
 			//console.log(JSON.stringify(toShow, undefined, "    "))
 			Object.keys(toShow).sort((a,b)=> parseInt(a)-parseInt(b)).forEach((i)=> {
@@ -465,8 +488,9 @@
 										filename: i, 
 										path: traced["path"], 
 										info: {
-											anime: traced.name, 
-											ep: i
+											anime: name, 
+											ep: i,
+											show: toShow[i]["show"]
 										}
 									})
 								}
@@ -555,7 +579,7 @@
 					
 				})
 			}
-			displayEp(toShow, episodesGrid, animeObj["link"] ??"")
+			displayEp(toShow, episodesGrid, animeObj["link"] ??"", animeObj["name"] ?? "Unknown")
 		})
 
 
