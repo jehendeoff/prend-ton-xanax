@@ -457,15 +457,15 @@
 							return alert("This anime doesn not have a url");
 						}
 						function downloadEpisode (){
-							if (m["ep"][i] !== undefined
-								&& m["ep"][i]["downloaded"] !== true){
+							if (traced["ep"][i] !== undefined
+								&& traced["ep"][i]["downloaded"] !== true){
 									download.emit("add", {
-										url:m["ep"][i]["url"], 
+										url:traced["ep"][i]["url"], 
 										module: url.match(/https?:\/\/([^.]*)/)[1], 
 										filename: i, 
-										path: m["path"], 
+										path: traced["path"], 
 										info: {
-											anime: m.name, 
+											anime: traced.name, 
 											ep: i
 										}
 									})
