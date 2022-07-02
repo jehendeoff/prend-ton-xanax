@@ -124,7 +124,6 @@ function refreshAnimeCache(){
 		.forEach(anime => {
 			const animeDir = global.config.anime.path + anime + "/";
 			let animeName = anime.replace(/ \(SRC [A-z0-9-+_]+\)/g, "");
-			if (AnimeCache[animeName] !== undefined) animeName = anime;
 
 			let module;
 			if (anime.match (/\(SRC ([A-z]+)\)/) !== null)
@@ -143,13 +142,14 @@ function refreshAnimeCache(){
 			config["module"] = module;
 
 			config["view"] = anime;
+			config["name"] = animeName;
 
 			config.files = fs.readdirSync(animeDir).filter(file => 
 				fs.statSync(animeDir+ file).isFile()
 			&& !["config.json", "config.yml"].includes(file)
 			);
 
-			AnimeCache[animeName] = config;
+			AnimeCache[anime] = config;
 		});
 }
 refreshAnimeCache();

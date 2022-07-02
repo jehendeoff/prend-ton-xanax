@@ -533,6 +533,7 @@
 		ep: 0,
 		anime: 0,
 	};
+	const displayed = [];
 	browse.on("list", list => {
 		totalAnime ={
 			ep: 0,
@@ -545,9 +546,10 @@
 		for (const animeName in list) {
 			totalAnime["anime"] +=1;
 			let animeObject = list[animeName];
-			animeObject.name = animeName
+			const animeNameEdited = !displayed.includes(animeObject.name) ? animeObject.name : animeName;
+			displayed.push(animeNameEdited);
 			addAnimeToSelector({
-				animeName: animeName,
+				animeName: animeNameEdited,
 				onclick: ()=>show(animeObject),
 				available: animeObject["files"]?.length,
 				downloadable: animeObject["currentEpisodes"]?.length
