@@ -440,7 +440,8 @@
 			Object.keys(toShow).sort((a,b)=> parseInt(a)-parseInt(b)).forEach((i)=> {
 				worked = true;
 				const file = document.createElement("div");
-				file.classList.add(toShow[i]["class"] ?? "downloadable")
+				file.classList.add(toShow[i]["class"] ?? "downloadable");
+				let traced;
 				if ((toShow[i]["class"] ?? "downloadable" )=== "watchable"){
 					file.onclick = () => {
 						bod.classList.add("player");
@@ -452,32 +453,40 @@
 					}
 				}else{
 					file.onclick = ()=> {
-						file.setAttribute("disabled", true)
-						file.classList("downloading")
 						if (url === ""){
 							return alert("This anime doesn not have a url");
 						}
-						download.emit("trace", {
-							url,
-							module: url.match(/https?:\/\/([^.]*)/)[1]
-						})
-
-						download.once("tracer", m => {
-							m = JSON.parse(m);
+						function download (){
 							if (m["ep"][i] !== undefined
-							&& m["ep"][i]["downloaded"] !== true){
-								download.emit("add", {
-									url:m["ep"][i]["url"], 
-									module: url.match(/https?:\/\/([^.]*)/)[1], 
-									filename: i, 
-									path: m["path"], 
-									info: {
-										anime: m.name, 
-										ep: i
-									}
-								})
-							}
-						});
+								&& m["ep"][i]["downloaded"] !== true){
+									download.emit("add", {
+										url:m["ep"][i]["url"], 
+										module: url.match(/https?:\/\/([^.]*)/)[1], 
+										filename: i, 
+										path: m["path"], 
+										info: {
+											anime: m.name, 
+											ep: i
+										}
+									})
+								}
+						}
+						file.setAttribute("disabled", true)
+						file.classList("downloading")
+
+						if (!traced){
+							download.emit("trace", {
+								url,
+								module: url.match(/https?:\/\/([^.]*)/)[1]
+							})
+							
+							download.once("tracer", m => {
+								m = JSON.parse(m);
+								traced = m;
+								download();
+							});
+						}else download()
+
 					}
 				}
 				elem.appendChild(file);
