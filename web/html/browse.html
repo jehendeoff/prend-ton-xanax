@@ -212,8 +212,19 @@
 					const filtered = children.filter (child => child.children[0].innerText === show);
 					if (filtered.length >0){
 						filtered.forEach(ep => {
-							ep.classList.add(type !== "finished" ? type : "downloaded");
 							ep.setAttribute("disabled", true);
+							if (type !== "finished"){
+								ep.classList.add(type);
+								ep.classList.remove("watchable");
+								ep.classList.add("downloadable");
+								ep.classList.add("downloading");
+								ep.setAttribute("disabled", true);
+							}else{
+								ep.classList.remove("downloadable");
+								ep.classList.remove("downloading");
+								ep.classList.add("watchable");
+								ep.setAttribute("disabled", false);
+							}
 						})
 					}
 				}
@@ -264,13 +275,14 @@
 		selector.appendChild(div);
 	}
 
-
+	let working = false;
 	function show (animeObj= {
 		name:"Unknown",
 		files: [],
 		currentStatus: "Incomplete",
 		tags: ["Unknown"]
 	}){
+		if (working === true) return alert("Please wait.");
 		console.log(animeObj);
 		bod.classList.add("show");
 		[...presentation.children].forEach(e => e.remove());
@@ -313,6 +325,7 @@
 			})
 		}
 
+		
 		function displayEp(toShow,elem, url, name){
 			let worked = false;
 			//console.log(JSON.stringify(toShow, undefined, "    "))
@@ -321,17 +334,16 @@
 				const file = document.createElement("div");
 				file.classList.add(toShow[i]["class"] ?? "downloadable");
 				let traced;
-				if ((toShow[i]["class"] ?? "downloadable" )=== "watchable"){
-					file.onclick = () => {
+				file.onclick = ()=> {
+					if (working === true) return alert("Please wait.");
+					if ((toShow[i]["class"] ?? "downloadable" )=== "watchable"){
 						bod.classList.add("player");
 						const video = document.createElement("video");
 						video.src = `${window.location.origin}/video?file=${toShow[i]["file"]}&anime=${btoa(animeObj["view"])}`;
 						video.setAttribute("controls", true);
 						bod.appendChild(video);
 						video.requestFullscreen();
-					}
-				}else{
-					file.onclick = ()=> {
+					}else{
 						if (url === ""){
 							return alert("This anime doesn not have a url");
 						}
@@ -355,18 +367,19 @@
 						file.classList.add("downloading")
 
 						if (!traced){
+							working = true;
 							download.emit("trace", {
 								url,
 								module: url.match(/https?:\/\/([^.]*)/)[1]
 							})
 							
 							download.once("tracer", m => {
+								working = false;
 								m = JSON.parse(m);
 								traced = m;
 								downloadEpisode();
 							});
 						}else downloadEpisode()
-
 					}
 				}
 				elem.appendChild(file);
