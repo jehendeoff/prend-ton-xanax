@@ -25,14 +25,14 @@ download.on("status", list => {
 			const element = list[type][key];
 
 			const name = element["info"]?.anime;
-			const show = element["info"]?.show ?? element["info"]?.ep;
+			const show = element["info"]?.ep;
 			if (document.querySelector("body > div.presentation > h1") !== null
 				&& document.querySelector("body > div.presentation > h1").innerText === name){
 				const children = [...document.querySelector("body > div.presentation").children]
 					.filter(ch => ch.tagName.toLowerCase() === "div")
 					.map (e => [...e.children])
 					.flat(1)
-				const filtered = children.filter (child => child.children[0].innerText === show);
+				const filtered = children.filter (child => child.hasAttribute("view") && child.getAttribute("view") === show);
 				if (filtered.length >0){
 					filtered.forEach(ep => {
 						ep.setAttribute("disabled", true);
@@ -115,6 +115,7 @@ function displayEp(toShow,elem, animeObj){
 		worked = true;
 		const file = document.createElement("div");
 		file.classList.add(toShow[i]["class"] ?? "downloadable");
+		file.setAttribute("view", i);
 		let traced;
 		function downloadEpisode (){
 			if (traced["ep"][i] !== undefined
@@ -127,7 +128,7 @@ function displayEp(toShow,elem, animeObj){
 					info: {
 						anime: name, 
 						ep: i,
-						show: toShow[i]["show"]
+						show: toShow[i]["show"],
 					}
 				});
 			}
