@@ -5,85 +5,12 @@
 	<meta charset="utf-8">
 	<script crossorigin="anonymous" referrerpolicy="no-referrer"
 		src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.4.0/socket.io.js?version=4.4.0"></script>
+	<link href="../css/main.css" rel="stylesheet">
 </head>
 
 <body>
 	<h1 id="loading">Loading, please wait.</h1>
-
 </body>
-<style>
-	* {
-		font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif
-	}
-	table{
-		border-collapse: collapse;
-	}
-	th{
-		width: max-content;
-		padding: 0px 3px;
-	}
-	th:nth-child(5){
-		background-color: #fbb;
-		cursor: pointer;
-	}
-	tr:nth-child(odd){
-		background-color: #bbb;
-	}
-	tr:nth-child(odd) > th:nth-child(5){
-		background-color: #f99;
-	}
-	tr:nth-child(1){
-		background-color: #444 ;
-		color: #fff;
-	}
-	tr:nth-child(1) > th:nth-child(5){
-		background-color: #444 ;
-	}
-
-	.wrapper{
-		display:grid;
-		grid-gap: 10px;
-		grid-template-columns: repeat(auto-fit, 200px);
-	}
-	.wrapper a {
-		text-align: center;
-		box-shadow: rgba(0, 0, 0, 0.2) 0px 8px 24px;
-		border-radius: 5px;
-		border-width: 2px;
-		border-style: solid;
-		border-color: rgba(0,0,0,0);
-		padding: 10px 5px;
-		font-size: xx-large;
-		cursor: pointer;
-	}
-	.wrapper a.downloaded{
-		cursor:not-allowed;
-		background-color: #bbb;
-	}
-	.errored{
-		color:#f22;
-	}
-	.finished{
-		color:#2f2;
-	}
-	.waiting{
-		color:#888;
-	}
-	.working{
-		animation-name: working;
-		animation-duration: 1s;
-		animation-timing-function: linear;
-		animation-iteration-count: infinite;
-	}
-	@keyframes working {
-		0% { color: #888; }
-		50% { color: #000; }
-		100% { color: #888; }
-	}
-	input[TYPE="text"] {
-		width: 400px;
-	}
-</style>
 <script>
 	if(typeof io === "undefined") {
 		document.getElementsByTagName("h1")[0].innerText="Socket.io wasn't able to load.";
