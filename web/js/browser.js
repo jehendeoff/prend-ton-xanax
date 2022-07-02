@@ -28,7 +28,10 @@ download.on("status", list => {
 			const show = element["info"]?.show ?? element["info"]?.ep;
 			if (document.querySelector("body > div.presentation > h1") !== null
 				&& document.querySelector("body > div.presentation > h1").innerText === name){
-				const children = [...document.querySelector("body > div.presentation > div").children];
+				const children = [...document.querySelector("body > div.presentation").children]
+					.filter(ch => ch.tagName.toLowerCase() === "div")
+					.map (e => [...e.children])
+					.flat(1)
 				const filtered = children.filter (child => child.children[0].innerText === show);
 				if (filtered.length >0){
 					filtered.forEach(ep => {
