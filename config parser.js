@@ -51,6 +51,7 @@ if (updated === true) fs.writeFileSync(configPath, yaml.stringify(global.config)
 
 
 if (!fs.existsSync(global.config.anime.path)) throw new Error("Anime path is unavailable.\t(config.yml => anime.path)");
+if (!fs.existsSync(global.config.app.cookie)) throw new Error("Cookies path is unavailable.\t(config.yml => app.cookie)");
 
 if (!global.config.puppeteer?.chromePath){
 	if (!global.config.puppeteer) global.config.puppeteer = {};
