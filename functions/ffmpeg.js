@@ -36,7 +36,7 @@ function testIntegrity(file, path){
 					"-v", "error", // only report error
 					"-i", "\""+file+"\"", //the file
 					"-map", "0:1", //only analyse the sound track (faster)
-					"-f", "null",  // don't output the conersion result
+					"-f", "null",  // don't output the conv>ersion result
 					"-", "2>&1"    //log in console
 				
 				],
@@ -48,16 +48,16 @@ function testIntegrity(file, path){
 			);
 			if (debug) console.log("Spawning ffmpeg");
 			spawn.on("error", function(err){
-				if (debug) console.log(`ffmpeg faced an error for "${file}" : ${err.slice(0,50)}`);
+				if (debug) console.log(`ffmpeg faced an error for "${path}${file}" : ${err.slice(0,50)}`);
 			});
 			spawn.stdout.on("data", (data) => {
-				if (debug) console.log(`ffmpeg is outputting data for "${file}" : ${data.slice(0,50)}`);
+				if (debug) console.log(`ffmpeg is outputting data for "${path}${file}" : ${data.slice(0,50)}`);
 			});
 			spawn.stderr.on("data", function(data) {
-				if (debug) console.log(`ffmpeg is outputting data for "${file}" : ${data.slice(0,50)}`);
+				if (debug) console.log(`ffmpeg is outputting data for "${path}${file}" : ${data.slice(0,50)}`);
 			});
 			spawn.on("close", code => {
-				if (debug) console.log(`exiting with code ${code}, for "${file}"`);
+				if (debug) console.log(`exiting with code ${code}, for "${path}${file}"`);
 				if (code === 0){
 					return resolve(true);
 				}else{
