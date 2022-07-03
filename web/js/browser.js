@@ -135,7 +135,7 @@ function displayEp(toShow,elem, animeObj){
 		}
 		file.onclick = ()=> {
 			if (working === true) return alert("Please wait.");
-			if ((toShow[i]["class"] ?? "downloadable" )=== "watchable"){
+			if (file.classList.contains( "watchable")){
 				bod.classList.add("player");
 				const video = document.createElement("video");
 				video.src = `${window.location.origin}/video?file=${toShow[i]["file"]}&anime=${btoa(animeObj["view"])}`;
