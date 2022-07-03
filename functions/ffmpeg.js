@@ -55,19 +55,24 @@ function testIntegrity(file, path){
 					timeout: 10000,
 				}
 			);
-			if (debug) console.log("Spawning ffmpeg");
+			let error = false;
+			if (debug) console.log(`Spawning ffmpeg for "${path}${file}" `);
 			spawn.on("error", function(err){
+				if (err.toString().toLowerCase().includes("error")) error = true;
 				if (debug) console.log(`ffmpeg faced an error for "${path}${file}" : ${err.slice(0,50)}`);
 			});
 			spawn.stdout.on("data", (data) => {
+				if (data.toString().toLowerCase().includes("error")) error = true;
 				if (debug) console.log(`ffmpeg is outputting data for "${path}${file}" : ${data.slice(0,50)}`);
 			});
 			spawn.stderr.on("data", function(data) {
+				if (data.toString().toLowerCase().includes("error")) error = true;
 				if (debug) console.log(`ffmpeg is outputting data for "${path}${file}" : ${data.slice(0,50)}`);
 			});
 			spawn.on("close", code => {
 				if (debug) console.log(`exiting with code ${code}, for "${path}${file}"`);
 				end();
+				if (error !== false) return resolve(false);
 				if (code === 0){
 					return resolve(true);
 				}else{
