@@ -113,5 +113,6 @@ function testIntegrityDirectory(path){
 module.exports = {
 	testIntegrity,
 	testIntegrityDirectory,
-	ffmpeg
+	ffmpeg,
+	isReady
 };

@@ -146,6 +146,7 @@ download.on("connect", socket => {
 
 //SECTION browse
 const browse = io.of("/browse");
+const ffmpeg = require("./functions/ffmpeg");
 let AnimeCache = {};
 function refreshAnimeCache(){
 	AnimeCache = {};
@@ -193,6 +194,38 @@ browse.on("connect", socket => {
 	socket.on("list", () => {
 		refreshAnimeCache();
 		socket.emit("list", JSON.stringify(AnimeCache));
+	});
+	socket.on("verify", obj =>{
+		const path = obj.path;
+		const file = obj.file;
+
+		if (ffmpeg.isReady !== true){
+			socket.emit("verify", {
+				path,
+				file,
+				ok: false, 
+				error: "FFMPEG isn't initialised"
+			});
+			return;
+		}
+
+		if (file !== undefined
+		&& typeof file === "string"){
+			ffmpeg.testIntegrity(file, path).then(result => {
+				socket.emit("verify", {
+					path,
+					file,
+					ok: result, 
+				});
+			});
+		} else{
+			ffmpeg.testIntegrityDirectory(path).then(result => {
+				socket.emit("verify", {
+					path,
+					ok: result, 
+				});
+			});
+		}
 	});
 });
 
