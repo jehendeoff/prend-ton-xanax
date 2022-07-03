@@ -1,10 +1,34 @@
 /* eslint-disable no-async-promise-executor */
 const fs = require("fs");
 const debug= process.env["debug ffmpeg"] === "true";
-const extensionRegex = /\.[0-9A-z]+?$/;
+let ffmpeg;
+
+const _spawn = require("child_process").spawn("ffmpeg", ["-version"]);
+_spawn.on("close", code => {
+	if (code !== 0){
+		if (debug) console.log("FFMPEG not found");
+		ffmpeg = false;
+		return;
+	}
+	if (debug) console.log("FFMPEG found");
+	ffmpeg = true;
+	return;
+
+});
+function isReady(){
+	if (ffmpeg === true)return true;
+	if (ffmpeg === undefined) return false;
+	if (ffmpeg === false){
+		console.error("A ffmpeg function has been called, but you don't have ffmpeg installed.");
+		return undefined;
+	}
+	return undefined;
+}
+
 
 function testIntegrity(file, path){
 	return new Promise((resolve, reject) => {
+		if (isReady() !== true) return reject(new Error("Not Ready"));
 		const FP = path+file;
 		if (fs.existsSync(FP) && !fs.statSync(FP).isDirectory()){
 			const spawn = require("child_process").spawn("ffmpeg", 
@@ -48,6 +72,7 @@ function testIntegrity(file, path){
 }
 function testIntegrityDirectory(path){
 	return new Promise(async(resolve, reject) => {
+		if (isReady() !== true) return reject(new Error("Not Ready"));
 		let ret = {};
 		if (! fs.existsSync(path) || !fs.statSync(path).isDirectory())
 			return reject(new Error("The path can not be resolved to a directory"));
@@ -85,9 +110,8 @@ function testIntegrityDirectory(path){
 	});
 }
 
-(async ()=> {
-	// console.log(await testIntegrity("6.mp4", "/run/media/jehende/hdd/anime/Dont Hurt Me My Healer (SRC animedao)/"));
-	// console.log(await testIntegrity("6 error.mp4", "/run/media/jehende/hdd/anime/Dont Hurt Me My Healer (SRC animedao)/"));
-	// console.log(await testIntegrityDirectory("/run/media/jehende/hdd/anime/Dont Hurt Me My Healer (SRC animedao)/"));
-	console.log(await testIntegrityDirectory("/run/media/jehende/hdd/anime/Endrid/"));
-})();
+module.exports = {
+	testIntegrity,
+	testIntegrityDirectory,
+	ffmpeg
+};
