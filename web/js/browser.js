@@ -110,13 +110,13 @@ function displayEp(toShow,elem, animeObj){
 	const url = animeObj["link"] ??"";
 	const name = animeObj["name"] ?? "Unknown";
 	let worked = false;
+	let traced;
 	//console.log(JSON.stringify(toShow, undefined, "    "))
 	Object.keys(toShow).sort((a,b)=> parseInt(a)-parseInt(b)).forEach((i)=> {
 		worked = true;
 		const file = document.createElement("div");
 		file.classList.add(toShow[i]["class"] ?? "downloadable");
 		file.setAttribute("view", i);
-		let traced;
 		function downloadEpisode (){
 			if (traced["ep"][i] !== undefined
 					&& traced["ep"][i]["downloaded"] !== true){
