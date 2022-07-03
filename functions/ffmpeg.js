@@ -1,6 +1,7 @@
 /* eslint-disable no-async-promise-executor */
 const fs = require("fs");
 const debug= process.env["debug ffmpeg"] === "true";
+const max_instances_at_instant = parseInt(process.env["instances ffmpeg"] ?? 4);
 let ffmpeg;
 
 const _spawn = require("child_process").spawn("ffmpeg", ["-version"]);
@@ -25,18 +26,26 @@ function isReady(){
 	return undefined;
 }
 
+let current = {};
 
 function testIntegrity(file, path){
 	return new Promise((resolve, reject) => {
-		if (isReady() !== true) return reject(new Error("Not Ready"));
 		const FP = path+file;
-		if (fs.existsSync(FP) && !fs.statSync(FP).isDirectory()){
+		if (!fs.existsSync(FP) || fs.statSync(FP).isDirectory())
+			return reject(new Error("The path can not be resolved to a file."));
+		if (isReady() !== true) return reject(new Error("Not Ready"));
+
+		function end(){
+			delete current[path + file];
+		}
+		function work(){
+			
 			const spawn = require("child_process").spawn("ffmpeg", 
 				[
 					"-v", "error", // only report error
 					"-i", "\""+file+"\"", //the file
 					"-map", "0:1", //only analyse the sound track (faster)
-					"-f", "null",  // don't output the conv>ersion result
+					"-f", "null",  // don't output the conversion result
 					"-", "2>&1"    //log in console
 				
 				],
@@ -58,15 +67,21 @@ function testIntegrity(file, path){
 			});
 			spawn.on("close", code => {
 				if (debug) console.log(`exiting with code ${code}, for "${path}${file}"`);
+				end();
 				if (code === 0){
 					return resolve(true);
 				}else{
 					return resolve(false);
 				}
 			});
-		}else{
-			reject(new Error("The path can not be resolved to a file."));
 		}
+		const i = setInterval(()=> {
+			if (Object.keys(current).length < max_instances_at_instant){
+				clearInterval(i);
+				current[path +file] = true;
+				work();
+			}
+		},100);
 	});
 
 }
@@ -85,7 +100,9 @@ function testIntegrityDirectory(path){
 				|| file.endsWith(".avi")
 				|| file.endsWith("mkv");
 			});
-		
+		if (videos.length === 0){
+			return resolve({});
+		}
 		let completed = [];
 		for (let i = 0; i < videos.length; i++) {
 			const video = videos[i];
