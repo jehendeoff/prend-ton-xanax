@@ -2,11 +2,12 @@
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const cloudflareBypasser = require("../puppeteer functions/cloudflare bypasser");
+const cookiesFunc = require("../puppeteer functions/cookies");
 puppeteer.use(StealthPlugin());
+
 const { DownloaderHelper } = require("node-downloader-helper");
 const fs = require("fs");
 
-const cookiePath = (process.env["appCookie"] ?? __dirname + "/../cookies/") + "animedao.json";
 var urlAnime = "https://animedao.to/view/6661668038/";
 var animePath = __dirname  +"/";
 var fileNameEP = undefined;
@@ -47,14 +48,11 @@ async function scrape ()  {
 
 	const page = await browser.newPage();
 	page.on("console", msg => {
-		if (process.env["debug"] === "true") console[msg.type()](...msg.args());
+		console[msg.type()](...msg.args());
 	});	
 	
-	if (fs.existsSync(cookiePath)){
-		const cookiesString = fs.readFileSync(cookiePath, "utf-8");
-		const cookies = JSON.parse(cookiesString);
-		await page.setCookie(...cookies);
-	}
+	const cookiesStart = cookiesFunc.loadCookies("animedao", cookiesFunc.createCookie("darkmode", "1", "animedao.to"));
+	await page.setCookie(...cookiesStart);
 
 	//popup blocker
 	browser.on("targetcreated", async (target)=> {
@@ -199,8 +197,8 @@ async function scrape ()  {
 		return document.getElementsByTagName("video")[0].src || document.getElementsByTagName("video")[0].children[0].src;
 	});
 
-	const cookies = await page.cookies();
-	await fs.writeFileSync(cookiePath, JSON.stringify(cookies));
+	const cookiesEnd = await page.cookies();
+	await cookiesFunc.saveCookies("animedao", cookiesEnd);
 	await page.close();
 
 	await browser.close();

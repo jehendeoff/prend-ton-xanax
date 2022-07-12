@@ -2,10 +2,10 @@
 const puppeteer = require("puppeteer-extra");
 const StealthPlugin = require("puppeteer-extra-plugin-stealth");
 const cloudflareBypasser = require("../puppeteer functions/cloudflare bypasser");
+const cookiesFunc = require("../puppeteer functions/cookies");
 puppeteer.use(StealthPlugin());
 const fs = require("fs");
 
-const cookiePath = (process.env["appCookie"] ?? __dirname + "/../cookies/") + "animedao.json";
 var urlAnime = "https://animedao.to/anime/life-with-an-ordinary-guy-who-reincarnated-into-a-total-fantasy-knockout/";
 var animepath = __dirname + "/";
 
@@ -34,11 +34,8 @@ async function scrape ()  {
 
 	const page = await browser.newPage();
 	const now = Date.now();
-	if (fs.existsSync(cookiePath)){
-		const cookiesString = fs.readFileSync(cookiePath, "utf-8");
-		const cookies = JSON.parse(cookiesString);
-		await page.setCookie(...cookies);
-	}
+	const cookiesStart = cookiesFunc.loadCookies("animedao", cookiesFunc.createCookie("darkmode", "1", "animedao.to"));
+	await page.setCookie(...cookiesStart);
 
 
 	await page.goto(urlAnime, {
@@ -82,8 +79,8 @@ async function scrape ()  {
 		return resClient;
 	}, now);
 
-	const cookies = await page.cookies();
-	await fs.writeFileSync(cookiePath, JSON.stringify(cookies));
+	const cookiesEnd = await page.cookies();
+	await cookiesFunc.saveCookies("animedao", cookiesEnd);
 
 	await browser.close();
 	res["path"] = res["name"].replace(/(?![A-Za-z0-9 ])./g, "") + " (SRC " + __filename.replace(/.*[/\\]/g, "").replace(/\.js$/, "") + ")";
