@@ -22,8 +22,9 @@ function loadCookies (platform, add){
 	if (fs.existsSync(cookiePath)){
 		cookiesString = fs.readFileSync(cookiePath, "utf-8");
 	}
+	cookiesString = JSON.parse(cookiesString);
 	cookiesString.push(add);
-	return JSON.parse(cookiesString);
+	return cookiesString;
 
 }
 function saveCookies(platform, cookies){
