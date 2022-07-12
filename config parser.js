@@ -45,15 +45,8 @@ if (global.config.app["localhost?"] === undefined){
 	global.config.app["localhost?"] = true;
 	updated = true;
 }
-
-
-if (updated === true) fs.writeFileSync(configPath, yaml.stringify(global.config));
-
-
-if (!fs.existsSync(global.config.anime.path)) throw new Error("Anime path is unavailable.\t(config.yml => anime.path)");
-if (!fs.existsSync(global.config.app.cookie)) throw new Error("Cookies path is unavailable.\t(config.yml => app.cookie)");
-
 if (!global.config.puppeteer?.chromePath){
+	console.warn("did not found any chrome executable ine the config file, trying to default to one.\t(config.yml => puppeteer => chromePath)");
 	if (!global.config.puppeteer) global.config.puppeteer = {};
 	const localChromeium =  __dirname+"/node_modules/puppeteer/.local-chromium/";
 	const version = fs.readdirSync(localChromeium).filter(file => 
@@ -61,16 +54,35 @@ if (!global.config.puppeteer?.chromePath){
 		&& fs.readdirSync(localChromeium+file).filter(folder => folder.includes("chrome")).length >0
 	)[0] + "/";
 	const os = fs.readdirSync(localChromeium + version).filter(file => fs.statSync(localChromeium+version+file).isDirectory())[0] + "/";
-	const chromeExec = fs.readdirSync(localChromeium + version + os)
-		.filter(file => file.replace(/.[A-z0-9]+?$/, "") === "chrome")
-		.sort((a,b)=>{
+	let chromeExec = fs.readdirSync(localChromeium + version + os)
+		.filter(file => file.replace(/\.[A-z0-9]+?$/, "") === "chrome");
+	switch (process.platform) {
+	case "win32":{
+		chromeExec = chromeExec.sort((a,b)=>{
 			const aExe = a.endsWith(".exe");
 			const bExe = b.endsWith(".exe");
+			
 			if (aExe === true 
-		&& bExe === true) return 0;
+			&& bExe === true) return 0;
+			
 			if (aExe === true) return -1;
 			if (bExe === true) return 1;
 			return 0;
 		});
+		break;
+	}
+
+	default:{
+		break;
+	}
+	}
 	global.config.puppeteer.chromePath =localChromeium + version + os + chromeExec[0];
+	updated = true;
 } 
+
+
+if (updated === true) fs.writeFileSync(configPath, yaml.stringify(global.config));
+
+
+if (!fs.existsSync(global.config.anime.path)) throw new Error("Anime path is unavailable.\t(config.yml => anime.path)");
+if (!fs.existsSync(global.config.app.cookie)) throw new Error("Cookies path is unavailable.\t(config.yml => app.cookie)");
