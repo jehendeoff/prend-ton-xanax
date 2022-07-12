@@ -158,7 +158,7 @@ function displayEp(toShow,elem, animeObj){
 						
 					download.once("tracer", m => {
 						working = false;
-						if (m["ok"] !== true) alert ("Error while fetching episode : " + m.toString() );
+						if (m["ok"] !== true) return alert ("Error while fetching episode : " + m.toString() );
 						traced = m;
 						downloadEpisode();
 					});
