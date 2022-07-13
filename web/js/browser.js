@@ -192,6 +192,25 @@ function show (animeObj= {
 	name.innerText = animeObj["name"] ?? "Unknown";
 	presentation.appendChild(name);
 
+	const retrace = document.createElement("h1");
+	retrace.innerText = "⟳";
+	retrace.onclick = ()=> {
+		if (working === true) return alert("Please wait.");
+		
+		download.emit("trace", {
+			url: animeObj["link"],
+			module: animeObj["link"].match(/https?:\/\/([^.]*)/)[1]
+		});
+		retrace.classList.add("working");
+		working = true;
+		download.on("tracer", result => {
+			show(result);
+			retrace.classList.remove("working");
+			working = false;
+		});
+	}
+	presentation.appendChild(retrace);
+
 	if (animeObj["error"]){
 		const error = document.createElement("a");
 		error.classList.add("error");

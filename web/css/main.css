@@ -78,7 +78,10 @@ body.show>div.presentation {
 	overflow: scroll;
 	height: calc(100% - 50px - 20px * 2);
 }
-
+div.presentation>h1 {
+	display: inline;
+	padding: 0 10px;
+  }
 div.presentation>a {
 	display: block;
 }
