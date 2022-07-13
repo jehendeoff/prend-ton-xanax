@@ -297,13 +297,17 @@ let stats ={
 	ep: 0,
 	anime: 0,
 };
-const displayed = [];
+let displayed = [];
 browse.on("list", list => {
+	displayed = [];
 	stats ={
 		ep: 0,
 		anime: 0,
 	};
 	[...selector.children].forEach(e => e.remove());
+	[...presentation.children].forEach(e => e.remove());
+	if (bod.classList.contains("show"))
+		bod.classList.remove("show");
 
 	list = JSON.parse(list);
 	console.log(list);
