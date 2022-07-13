@@ -36,7 +36,7 @@ async function scrape ()  {
 
 	let res = await page.evaluate(async (now, urlAnime) => {
 		let resClient = {
-			time: now,
+			lastChecked: now,
 			module: "vostfree"
 		};
 		resClient["name"] = document.querySelector("#dle-content > div.watch-top > div > div > div > div.slide-middle > h1").innerText;
@@ -55,26 +55,24 @@ async function scrape ()  {
 		});
 
 		//there doesn't seems to be any reasonable way to detect if it has ended
-		// const status = document.querySelector(".col-lg-8").innerText.match(/Status: ([^\r\n]*)/);
-		// if (status !== null) resClient["status"] = status[1];
 		const release = document.querySelector("#dle-content > div.watch-top > div > div > div > div.slide-info > p:nth-child(1) > b > a").innerText;
-		if (release !== null) resClient["release"] = release[1];
+		if (release !== null) resClient["releaseDate"] = release[1];
 
 		return resClient;
 	}, now, urlAnime);
 	await browser.close();
+
 	res["path"] = res["name"].replace(/(?![A-Za-z0-9 ])./g, "") + " (SRC " + __filename.replace(/.*[/\\]/g, "").replace(/\.js$/, "") + ")";
+	const animeDir = animepath + res["path"] + "/";
+	res["link"] = urlAnime;
+	res["currentEpisodes"] = Object.keys(res["ep"]);
+	res["files"] = fs.readdirSync(animeDir).filter(file => 
+		fs.statSync(animeDir+ file).isFile()
+		&& !["config.json", "config.yml"].includes(file)
+	);
 
-	if (!fs.existsSync(animepath + res["path"] + "/")) fs.mkdirSync(animepath + res["path"] + "/");
-	fs.writeFileSync(animepath + res["path"] + "/config.json", JSON.stringify({
-		link : urlAnime,
-		tags : res["tags"],
-		lastChecked : res["now"],
-		releaseDate : res["release"],
-		currentStatus : undefined, //NOTE we can't find a way
-		currentEpisodes: Object.keys(res["ep"])
-
-	}), "utf-8");
+	if (!fs.existsSync(animeDir)) fs.mkdirSync(animeDir);
+	fs.writeFileSync(animeDir +"config.json", JSON.stringify(res), "utf-8");
 
 	for (const key in res["ep"]) {
 		let e = res["ep"][key];

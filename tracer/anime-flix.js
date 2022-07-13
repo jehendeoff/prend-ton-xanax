@@ -46,7 +46,7 @@ async function scrape ()  {
 
 	let res = await page.evaluate(async (now, urlAnime) => {
 		let resClient = {
-			time: now,
+			lastChecked: now,
 			module: "anime-flix"
 		};
 		resClient["name"] = document.querySelector("#single > div.content.right > div.sheader > div.data > h1").innerText;
@@ -74,30 +74,29 @@ async function scrape ()  {
 		// });
 
 		//there doesn't seems to be any reasonable way to detect if it has ended
-		// const status = document.querySelector(".col-lg-8").innerText.match(/Status: ([^\r\n]*)/);
-		// if (status !== null) resClient["status"] = status[1];
+		
 		const release = [...document.getElementById("info").children].filter(ch => ch.children.length > 1 && ch.children[0].innerText === "Première date de diffusion")[0].children[1].innerText;
-		if (release !== null) resClient["release"] = release;
+		if (release !== null) resClient["releaseDate"] = release;
 
 		return resClient;
 	}, now, urlAnime);
-
+	//we want to close the browser as soon as possible
 	const cookies = await page.cookies();
 	await fs.writeFileSync(cookiePath, JSON.stringify(cookies));
-
 	await browser.close();
+
+
 	res["path"] = res["name"].replace(/(?![A-Za-z0-9 ])./g, "") + " (SRC " + __filename.replace(/.*[/\\]/g, "").replace(/\.js$/, "") + ")";
+	const animeDir = animepath + res["path"] + "/";
+	res["link"] = urlAnime;
+	res["currentEpisodes"] = Object.keys(res["ep"]);
+	res["files"] = fs.readdirSync(animeDir).filter(file => 
+		fs.statSync(animeDir+ file).isFile()
+		&& !["config.json", "config.yml"].includes(file)
+	);
 
-	if (!fs.existsSync(animepath + res["path"] + "/")) fs.mkdirSync(animepath + res["path"] + "/");
-	fs.writeFileSync(animepath + res["path"] + "/config.json", JSON.stringify({
-		link : urlAnime,
-		tags : res["tags"],
-		lastChecked : res["now"],
-		releaseDate : res["release"],
-		currentStatus : undefined, //NOTE we can't find a way
-		currentEpisodes: Object.keys(res["ep"])
-
-	}), "utf-8");
+	if (!fs.existsSync(animeDir)) fs.mkdirSync(animeDir);
+	fs.writeFileSync(animeDir +"config.json", JSON.stringify(res), "utf-8");
 
 	for (const key in res["ep"]) {
 		let e = res["ep"][key];
