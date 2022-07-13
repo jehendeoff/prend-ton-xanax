@@ -25,6 +25,7 @@ process.on("message", async (msg) => {
 
 
 async function scrape ()  {
+
 	const browser = await puppeteer.launch({
 		executablePath: process.env["chromePath"],
 		headless: false,
@@ -46,7 +47,7 @@ async function scrape ()  {
 	let res = await page.evaluate(async (now) => {
 		
 		let resClient = {
-			time: now,
+			lastChecked: now,
 			module: "animedao"
 		};
 		resClient["name"] = document.querySelector(".col-lg-8 > h2:nth-child(1) > b:nth-child(1)").innerText;
@@ -72,30 +73,33 @@ async function scrape ()  {
 			};
 		});
 		const status = document.querySelector(".col-lg-8").innerText.match(/Status: ([^\r\n]*)/);
-		if (status !== null) resClient["status"] = status[1];
+		if (status !== null) resClient["currentStatus"] = status[1];
 		const release = document.querySelector(".col-lg-8").innerText.match(/Year: ([^\r\n]*)/);
-		if (release !== null) resClient["release"] = release[1];
+		if (release !== null) resClient["releaseDate"] = release[1];
 
 		return resClient;
 	}, now);
-
+	//We want to close as soon as possible to prevent using the cpu
 	const cookiesEnd = await page.cookies();
 	await cookiesFunc.saveCookies("animedao", cookiesEnd);
-
 	await browser.close();
-	res["path"] = res["name"].replace(/(?![A-Za-z0-9 ])./g, "") + " (SRC " + __filename.replace(/.*[/\\]/g, "").replace(/\.js$/, "") + ")";
+	
 
-	if (!fs.existsSync(animepath + res["path"] + "/")) fs.mkdirSync(animepath + res["path"] + "/");
-	fs.writeFileSync(animepath + res["path"] + "/config.json", JSON.stringify({
-		link : urlAnime,
-		tags : res["tags"],
-		lastChecked : res["now"],
-		releaseDate : res["release"],
-		currentStatus : res["status"],
-		currentEpisodes: Object.keys(res["ep"])
+	res["path"] = res["name"].replace(/(?![A-Za-z0-9 ])./g, "") + " (SRC " + __filename/*yes, i know this is bad*/.replace(/.*[/\\]/g, "").replace(/\.js$/, "") + ")";
+	const animeDir = animepath + res["path"] + "/";
+	res["link"] = urlAnime;
+	res["currentEpisodes"] = Object.keys(res["ep"]);
+	res["files"] = fs.readdirSync(animeDir).filter(file => 
+		fs.statSync(animeDir+ file).isFile()
+		&& !["config.json", "config.yml"].includes(file)
+	);
 
-	}), "utf-8");
 
+	if (!fs.existsSync(animeDir)) fs.mkdirSync(animeDir);
+	fs.writeFileSync(animeDir +"config.json", JSON.stringify(res), "utf-8");
+
+
+	//should be abandoned
 	for (const key in res["ep"]) {
 		let e = res["ep"][key];
 		const epPath = animepath + res["path"] + "/" + key.match(/[0-9.]*$/g)[0];
