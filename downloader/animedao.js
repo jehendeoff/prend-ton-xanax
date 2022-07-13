@@ -47,9 +47,6 @@ async function scrape ()  {
 	});
 
 	const page = await browser.newPage();
-	page.on("console", msg => {
-		console[msg.type()](...msg.args());
-	});	
 	
 	const cookiesStart = cookiesFunc.loadCookies("animedao", cookiesFunc.createCookie("darkmode", "1", "animedao.to"));
 	await page.setCookie(...cookiesStart);
