@@ -76,8 +76,7 @@ async function scrape ()  {
 	await cloudflareBypasser.cancelCloudflare(page);
 
 	process.send("Looking: Trying with vcdn");
-	await page.evaluate(async () => {
-
+	const testVCDN = await page.evaluate(async () => {
 		[...document.getElementsByTagName("iframe")].filter(iframe => iframe.id !== "").forEach(iframe => iframe.remove());
 		console.clear = () => {};
 		console.error("here");
@@ -110,9 +109,11 @@ async function scrape ()  {
 
 		await sleep(2000);
 
-		return document.getElementById("videowrapper_fembed").children[0].src;
+		return true;
 
 	});
+	if (testVCDN !== true)
+		throw new Error(testVCDN);
 	process.send("Looking: Vcdn detected, getting video file");
 	const frameHandler = await page.$("#videowrapper_fembed > iframe");
 	const frame = await frameHandler.contentFrame();
