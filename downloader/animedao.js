@@ -78,6 +78,7 @@ async function scrape ()  {
 	process.send("Looking: Trying with vcdn");
 	await page.evaluate(async () => {
 
+		[...document.getElementsByTagName("iframe")].filter(iframe => iframe.id !== "").forEach(iframe => iframe.remove());
 		console.clear = () => {};
 		console.error("here");
 		//debugger;
