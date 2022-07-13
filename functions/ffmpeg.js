@@ -3,19 +3,23 @@ const fs = require("fs");
 const debug= process.env["debug ffmpeg"] === "true";
 const max_instances_at_instant = parseInt(process.env["instances ffmpeg"] ?? 4);
 let ffmpeg;
-
-const _spawn = require("child_process").spawn("ffmpeg", ["-version"]);
-_spawn.on("close", code => {
-	if (code !== 0){
-		if (debug) console.log("FFMPEG not found");
-		ffmpeg = false;
+try {
+	const _spawn = require("child_process").spawn("ffmpeg", ["-version"]);
+	_spawn.on("close", code => {
+		if (code !== 0){
+			if (debug) console.log("FFMPEG not found");
+			ffmpeg = false;
+			return;
+		}
+		if (debug) console.log("FFMPEG found");
+		ffmpeg = true;
 		return;
-	}
-	if (debug) console.log("FFMPEG found");
-	ffmpeg = true;
-	return;
-
-});
+	
+	});
+} catch (error) {
+	if (debug) console.error(error.toString());
+	ffmpeg = false;
+}
 function isReady(){
 	if (ffmpeg === true)return true;
 	if (ffmpeg === undefined) return false;
