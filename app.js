@@ -199,7 +199,7 @@ browse.on("connect", socket => {
 		const path = obj.path;
 		const file = obj.file;
 
-		if (ffmpeg.isReady !== true){
+		if (ffmpeg.isReady() !== true){
 			socket.emit("verify", {
 				path,
 				file,
