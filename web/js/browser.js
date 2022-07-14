@@ -213,9 +213,9 @@ function show (animeObj= {
 		retrace.classList.add("working");
 		working = true;
 		download.on("tracer", result => {
-			show(result);
-			retrace.classList.remove("working");
 			working = false;
+			retrace.classList.remove("working");
+			show(result);
 		});
 	}
 	presentation.appendChild(retrace);
