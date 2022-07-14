@@ -14,7 +14,10 @@ let download =io("/download", {
 });
 download.on("status", list => {
 	["working", "waiting", "errored", "finished"].forEach(Class => {
-		[...document.getElementsByClassName(Class)].forEach(elem => {
+		[...document.getElementsByClassName(Class)]
+		.filter(elem => 
+			elem.tagName === "a"
+		).forEach(elem => {
 			elem.classList.remove(Class);
 		});
 	});
