@@ -68,6 +68,15 @@ download.on("connect", ()=> {
 download.on("stop", console.log);
 
 document.getElementById("loading").innerText = "Browse";
+const browseReList = document.createElement("a");
+browseReList.innerText = "⟳";
+browseReList.onclick = ()=> {
+	if (working === true) return alert("Please wait.");
+	
+	browse.emit("list");
+}
+document.getElementById("loading").appendChild(browseReList);
+
 
 
 //SECTION selector
