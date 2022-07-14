@@ -45,11 +45,14 @@ download.on("status", list => {
 							ep.classList.add("downloadable");
 							ep.classList.add("downloading");
 							ep.setAttribute("disabled", true);
+							const percent = (element["percent"] ?? "").slice(0,5);
+							ep.style.background = `linear-gradient(90deg, rgba(0, 0, 0, 0.3) 10%, ${percent}%, rgba(0, 0, 0, 0.1) 10%)`;
 						}else{
 							ep.classList.remove("downloadable");
 							ep.classList.remove("downloading");
 							ep.classList.add("watchable");
 							ep.setAttribute("disabled", false);
+							ep.style.background = undefined;
 						}
 					});
 				}
