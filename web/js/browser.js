@@ -13,7 +13,7 @@ let download =io("/download", {
 	rememberUpgrade : true,
 });
 download.on("status", list => {
-	["working", "waiting", "errored", "finished"].forEach(Class => {
+	["working", "waiting", "errored", "finished", "downloading"].forEach(Class => {
 		[...document.getElementsByClassName(Class)]
 		.filter(elem => 
 			elem.tagName === "a"
@@ -43,13 +43,17 @@ download.on("status", list => {
 							ep.classList.add(type);
 							ep.classList.remove("watchable");
 							ep.classList.add("downloadable");
-							ep.classList.add("downloading");
-							ep.setAttribute("disabled", true);
-							const percent = (element["percent"] ?? "").slice(0,5);
-							ep.style.background = `linear-gradient(90deg, rgba(0, 0, 0, 0.3) 10%, ${percent}%, rgba(0, 0, 0, 0.1) 10%)`;
+							if (type !=="errored"){
+								ep.classList.add("downloading");
+								ep.setAttribute("disabled", true);
+								const percent = (element["percent"] ?? "").slice(0,5);
+								ep.style.background = `linear-gradient(90deg, rgba(0, 0, 0, 0.3) 10%, ${percent}%, rgba(0, 0, 0, 0.1) 10%)`;
+							}else{
+								ep.setAttribute("disabled", true);
+
+							}
 						}else{
 							ep.classList.remove("downloadable");
-							ep.classList.remove("downloading");
 							ep.classList.add("watchable");
 							ep.setAttribute("disabled", false);
 							ep.style.background = undefined;
