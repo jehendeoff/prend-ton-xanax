@@ -89,13 +89,14 @@ async function scrape ()  {
 	const animeDir = animepath + res["path"] + "/";
 	res["link"] = urlAnime;
 	res["currentEpisodes"] = Object.keys(res["ep"]);
+
+	if (!fs.existsSync(animeDir)) fs.mkdirSync(animeDir);
 	res["files"] = fs.readdirSync(animeDir).filter(file => 
 		fs.statSync(animeDir+ file).isFile()
 		&& !["config.json", "config.yml"].includes(file)
 	);
 
 
-	if (!fs.existsSync(animeDir)) fs.mkdirSync(animeDir);
 	fs.writeFileSync(animeDir +"config.json", JSON.stringify(res), "utf-8");
 
 
