@@ -80,16 +80,6 @@ download.on("connect", ()=> {
 
 download.on("stop", console.log);
 
-document.getElementById("loading").innerText = "Browse";
-const browseReList = document.createElement("a");
-browseReList.innerText = "⟳";
-browseReList.onclick = ()=> {
-	if (working === true) return alert("Please wait.");
-	
-	browse.emit("list");
-}
-document.getElementById("loading").appendChild(browseReList);
-
 
 
 //SECTION selector
@@ -340,6 +330,7 @@ let stats ={
 };
 let displayed = [];
 browse.on("list", list => {
+	working = false;
 	displayed = [];
 	stats ={
 		ep: 0,
@@ -379,9 +370,20 @@ browse.on("list", list => {
 		}
 		//debugger
 	}
+	browseReList.classList.remove("working");
 });
 browse.emit("list");
 
+document.getElementById("loading").innerText = "Browse";
+const browseReList = document.createElement("a");
+browseReList.innerText = "⟳";
+browseReList.onclick = ()=> {
+	if (working === true) return alert("Please wait.");
+	working = true;
+	browseReList.classList.add("working");
+	browse.emit("list");
+}
+document.getElementById("loading").appendChild(browseReList);
 setInterval(()=> {
 	try {
 		document.title = `${stats["anime"]} animes, and ${stats["ep"]} episodes.`;
