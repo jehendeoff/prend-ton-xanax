@@ -74,17 +74,18 @@ body.show>div.selector {
 
 body>div.presentation {
 	width: auto;
-	float: right;
+	/*float: right;*/
+	overflow: scroll;
+	height: calc(100% - 50px - 20px * 2);
+	padding: 0 0 0 10px;
 }
 
 body.show>div.presentation {
-	width: 80%;
-	overflow: scroll;
-	height: calc(100% - 50px - 20px * 2);
+	width: calc(80% - 10px);
 }
 div.presentation>h1 {
 	display: inline;
-	padding: 0 10px;
+	padding: 0 10px 0 0;
   }
 div.presentation>a {
 	display: block;
