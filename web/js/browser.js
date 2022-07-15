@@ -6,6 +6,18 @@ if(typeof io === "undefined") {
 	throw new Error("Socket.io wasn't able to load");
 }
 
+function changeURL(obj = {
+	act: undefined,
+}){
+	const url = new URL(location);
+	for (const key in obj) {
+		if (Object.hasOwnProperty.call(obj, key)) {
+			url.searchParams.set(key, obj[key]);
+			
+		}
+	}
+	return url.toString();
+}
 // let lobby =io("/lobby", {
 // 	rememberUpgrade : true,
 // });
@@ -117,6 +129,27 @@ presentation.classList.add("presentation");
 bod.appendChild(presentation);
 
 let working = false;
+
+function playVideo({
+	source = "",
+	autoplay = false,
+	fullscreen = false
+}){
+	bod.classList.add("player");
+	const video = document.createElement("video");
+	video.id = "videoPlayer";
+	video.src = source;
+	video.setAttribute("controls", true);
+	bod.appendChild(video);
+	if (fullscreen === true)
+		video.requestFullscreen();
+	if (autoplay === true)
+		video.play();
+	history.pushState({}, "", changeURL({
+		act: "playVideo",
+		source: btoa(source)
+	}));
+}
 	
 function displayEp(toShow,elem, animeObj){
 	const url = animeObj["link"] ??"";
@@ -148,13 +181,9 @@ function displayEp(toShow,elem, animeObj){
 		file.onclick = ()=> {
 			if (working === true) return alert("Please wait.");
 			if (file.classList.contains( "watchable")){
-				bod.classList.add("player");
-				const video = document.createElement("video");
-				video.id = "videoPlayer";
-				video.src = `${window.location.origin}/video?file=${toShow[i]["file"]}&anime=${btoa(animeObj["view"])}`;
-				video.setAttribute("controls", true);
-				bod.appendChild(video);
-				video.requestFullscreen();
+				playVideo({
+					source: `${location.origin}/video?file=${toShow[i]["file"]}&anime=${btoa(animeObj["view"])}`
+				});
 			}else{
 				if (url === ""){
 					return alert("This anime doesn not have a url");
@@ -407,7 +436,40 @@ document.addEventListener("keyup", event => {
 	}
 	}
 });
+function refreshPageState(){
+	[...presentation.children].forEach(e => e.remove());
+	if (bod.classList.contains("player")){
+		const player = document.getElementById("videoPlayer");
+		if (player)
+			player.remove();
+		bod.classList.remove("player");
+	}
+	bod.classList.remove("show");
 
+	const params = (new URL(location)).searchParams;
+	if (params.has("act")){
+		switch (params.get("act")) {
+		case "playVideo":
+			if (params.has("source")){
+				const source = atob(params.get("source"));
+				playVideo({
+					source
+				})
+			}else{
+				alert("Could not autoplay video\r\nwe did not found it in the url")
+			}
+			break;
+	
+		default:
+			break;
+		}
+	}
+
+}
+window.addEventListener("popstate", event => {
+	refreshPageState()
+});
+refreshPageState();
 setInterval(()=> {
 	try {
 		document.title = `${stats["anime"]} animes, and ${stats["ep"]} episodes.`;
