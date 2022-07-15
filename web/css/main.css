@@ -9,7 +9,7 @@ body {
 
 * {
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-	transition: 1s linear;
+	transition: all 0.3s linear;
 }
 h1 > a {
 	padding: 0 10px;
