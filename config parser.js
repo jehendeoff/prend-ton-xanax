@@ -26,6 +26,7 @@ if (global.config.anime.path === undefined
 		fs.mkdirSync(global.config.anime.path);
 	updated = true;
 }
+
 if (global.config.app.port === undefined
 || global.config.app.port === null){
 	global.config.app.port = 10410;
@@ -45,6 +46,16 @@ if (global.config.app["localhost?"] === undefined){
 	global.config.app["localhost?"] = true;
 	updated = true;
 }
+
+if (global.config.tracer === undefined)global.config.tracer = {};
+if (global.config.tracer.cache === undefined)global.config.tracer.cache = {};
+if (global.config.tracer.cache.timeDifference === undefined
+|| global.config.tracer.cache.timeDifference === null){
+	global.config.tracer.cache.timeDifference = 3600;
+	console.warn("Did not found the amount of time to cache the tracer's response, defaulting to 3600 seconds.\t(config.yml => tracer.cache.timeDifference)");
+	updated = true;
+}
+
 if (!global.config.puppeteer?.chromePath){
 	console.warn("did not found any chrome executable ine the config file, trying to default to one.\t(config.yml => puppeteer => chromePath)");
 	if (!global.config.puppeteer) global.config.puppeteer = {};
