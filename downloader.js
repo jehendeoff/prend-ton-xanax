@@ -1,4 +1,5 @@
 const cluster = require("cluster");
+const DownloadDebug = process.env["debug download"] === "true";
 
 let DownloadList = {
 	errored: {
@@ -71,7 +72,7 @@ function downloadEP (site, module, path, fileName, info){
 			chromePath: global.config.puppeteer?.chromePath ?? "",
 			preferLanguage:  global.config.anime?.prefer?.language ?? "",
 			appCookie: global.config.app.cookie,
-			debug: process.env["debug"],
+			debug: process.env["debug download"],
 		});
 		function error(){
 			if (current !== "errored"){
@@ -117,7 +118,7 @@ function downloadEP (site, module, path, fileName, info){
 
 		DownloadList[current][where]["filename"] = fileName;
 		download.on("message", message => {
-			if (process.env["debug"] === true) console.log(message);
+			if (DownloadDebug === true) console.log(message);
 			if (message.includes(":") && !message.startsWith("Download: ")) DownloadList[current][where]["status"] = message;
 			if (typeof message !== "string") return;
 			if (message.startsWith ("Looking: ") && message.includes("F:")){
@@ -146,17 +147,17 @@ function downloadEP (site, module, path, fileName, info){
 			event(message);
 		});
 		download.on("error", () => {
-			console.error("could not talk to worker");
+			console.warn("could not talk to worker");
 		});
 		download.on("exit", (code, signal)=> {
 			if (signal) {
-				console.log(`worker was killed by signal: ${signal}`);
+				console.error(`worker was killed by signal: ${signal}`);
 				error();
 			} else if (code !== 0) {
-				console.log(`worker exited with error code: ${code}`);
+				console.error(`worker exited with error code: ${code}`);
 				error();
 			} else {
-				console.log("worker success!");
+				if (DownloadDebug === true) console.log("worker success!");
 				end();
 			}
 		});

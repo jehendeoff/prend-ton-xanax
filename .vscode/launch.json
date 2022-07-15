@@ -13,7 +13,9 @@
 			],
 			"program": "${workspaceFolder}/index.js",
 			"env": {
-				"debug ffmpeg": "false"
+				"debug ffmpeg": "true",
+				"debug download": "true",
+				"debug browse": "true",
 			}
 		}
 	]

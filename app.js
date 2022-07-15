@@ -103,6 +103,7 @@ const app = http.createServer((req, res)=> {
 const io = require("socket.io")(app);
 
 //SECTION download
+const DownloadDebug = process.env["debug download"] === "true";
 const download = io.of("/download");
 setInterval(() => {
 	download.emit("status", downloader["DownloadList"]);
@@ -111,7 +112,7 @@ setInterval(() => {
 download.on("connect", socket => {
 
 	socket.on("add", obj=> {
-		console.log("Socket asked to download");
+		if (DownloadDebug===true) console.log("Socket asked to download");
 		const url = obj.url;
 		const fileName = obj.filename;
 		const module = obj.module;
@@ -139,12 +140,13 @@ download.on("connect", socket => {
 			socket.emit("status", downloader["DownloadList"]);
 		});
 	});
-	console.log("Socket connected");
+	if (DownloadDebug===true) console.log("Socket connected");
 });
 //!SECTION
 
 
 //SECTION browse
+const BrowseDebug = process.env["debug browse"] === "true";
 const browse = io.of("/browse");
 const ffmpeg = require("./functions/ffmpeg");
 let AnimeCache = {};
