@@ -384,6 +384,29 @@ browseReList.onclick = ()=> {
 	browse.emit("list");
 }
 document.getElementById("loading").appendChild(browseReList);
+
+document.addEventListener("keyup", event => {
+	switch (event.key.toLowerCase()) {
+		case "escape":{
+			if (bod.classList.contains("player")){
+				const player = document.getElementById("videoPlayer");
+				if (player)
+					player.remove();
+				bod.classList.remove("player");
+				return;
+			}
+			if (bod.classList.contains("show")){
+				bod.classList.remove("show");
+				return;
+			}
+			break;
+		}
+		default:{
+			break;
+		}
+	}
+})
+
 setInterval(()=> {
 	try {
 		document.title = `${stats["anime"]} animes, and ${stats["ep"]} episodes.`;
