@@ -150,6 +150,7 @@ function displayEp(toShow,elem, animeObj){
 			if (file.classList.contains( "watchable")){
 				bod.classList.add("player");
 				const video = document.createElement("video");
+				video.id = "videoPlayer";
 				video.src = `${window.location.origin}/video?file=${toShow[i]["file"]}&anime=${btoa(animeObj["view"])}`;
 				video.setAttribute("controls", true);
 				bod.appendChild(video);
