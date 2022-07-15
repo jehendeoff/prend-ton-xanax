@@ -42,6 +42,7 @@ download.on("status", list => {
 						if (type !== "finished"){
 							ep.classList.add(type);
 							ep.classList.remove("watchable");
+							ep.classList.remove("waiting");
 							ep.classList.add("downloadable");
 							if (type !=="errored"){
 								ep.classList.add("downloading");
@@ -54,9 +55,11 @@ download.on("status", list => {
 							}
 						}else{
 							ep.classList.remove("downloadable");
+							ep.classList.remove("downloading");
+							ep.classList.remove("working");
 							ep.classList.add("watchable");
 							ep.setAttribute("disabled", false);
-							ep.style.background = undefined;
+							ep.style.background = "";
 						}
 					});
 				}
