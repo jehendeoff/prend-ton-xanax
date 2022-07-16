@@ -5,6 +5,7 @@ html {
 body {
 	margin: 0;
 	height: 100%;
+	overflow: hidden;
 }
 
 * {
@@ -42,7 +43,7 @@ body.player>video {
 
 div.selector {
 	/*width: fit-content;*/
-	width: 80%;
+	width: 100%;
 	float: left;
 	height: calc(100% - 50px - 20px * 2);
 	overflow: auto;
@@ -209,4 +210,15 @@ tr:nth-child(1)>th:nth-child(5) {
 
 input[TYPE="text"] {
 	width: 400px;
+}
+
+@media screen and (max-width: 1340px) {
+	
+	body.show>div.selector {
+		width: 0;
+	}
+	
+	body.show>div.presentation {
+		width: calc(100% - 10px);
+	}
 }
