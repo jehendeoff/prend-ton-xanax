@@ -17,6 +17,11 @@ function changeURL(obj = {
 	}
 	return url.toString();
 }
+function move(url){
+	if (url === location.href) return;
+	history.pushState({}, "", url);
+
+}
 // let lobby =io("/lobby", {
 // 	rememberUpgrade : true,
 // });
@@ -146,7 +151,7 @@ function playVideo({
 		video.requestFullscreen();
 	if (autoplay === true)
 		video.play();
-	history.pushState({}, "", changeURL({
+	move(changeURL({
 		act: "playVideo",
 		source: btoa(source)
 	}));
@@ -229,7 +234,7 @@ function show (animeObj= {
 	if (working === true) return alert("Please wait.");
 		
 	bod.classList.add("show");
-	history.pushState({}, "", changeURL({
+	move(changeURL({
 		act: "select",
 		anime: btoa(animeObj["view"])
 	}));
