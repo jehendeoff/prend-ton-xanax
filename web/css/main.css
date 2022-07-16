@@ -41,11 +41,11 @@ body.player>video {
 }
 
 div.selector {
-	width: fit-content;
+	//width: fit-content;
 	max-width: 80%;
 	float: left;
 	height: calc(100% - 50px - 20px * 2);
-	overflow: scroll;
+	overflow: auto;
 }
 
 div.selector>div>a {
@@ -75,7 +75,7 @@ body.show>div.selector {
 body>div.presentation {
 	width: auto;
 	/*float: right;*/
-	overflow: scroll;
+	overflow: auto;
 	height: calc(100% - 50px - 20px * 2);
 	padding: 0 0 0 10px;
 }
