@@ -26,8 +26,5 @@ module.exports = {
 			"error",
 			"always"
 		]
-	},
-	"global": {
-		"io": true
 	}
 };
