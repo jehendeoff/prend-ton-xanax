@@ -9,11 +9,10 @@ if(typeof io === "undefined") {
 function changeURL(obj = {
 	act: undefined,
 }){
-	const url = new URL(location);
+	const url = new URL(location.href.replace(location.search, ""));
 	for (const key in obj) {
 		if (Object.hasOwnProperty.call(obj, key)) {
 			url.searchParams.set(key, obj[key]);
-			
 		}
 	}
 	return url.toString();
@@ -27,11 +26,11 @@ let download =io("/download", {
 download.on("status", list => {
 	["working", "waiting", "errored", "finished", "downloading"].forEach(Class => {
 		[...document.getElementsByClassName(Class)]
-		.filter(elem => 
-			elem.tagName === "a"
-		).forEach(elem => {
-			elem.classList.remove(Class);
-		});
+			.filter(elem => 
+				elem.tagName === "a"
+			).forEach(elem => {
+				elem.classList.remove(Class);
+			});
 	});
 
 	for (const type in list) {
@@ -46,7 +45,7 @@ download.on("status", list => {
 				const children = [...document.querySelector("body > div.presentation").children]
 					.filter(ch => ch.tagName.toLowerCase() === "div")
 					.map (e => [...e.children])
-					.flat(1)
+					.flat(1);
 				const filtered = children.filter (child => child.hasAttribute("view") && child.getAttribute("view") === show);
 				if (filtered.length >0){
 					filtered.forEach(ep => {
@@ -105,9 +104,11 @@ function addAnimeToSelector({
 	watched = 0,
 	available = 0,
 	downloadable=0,
+	ref="Unknown"
 }){
 	const div = document.createElement("div");
 	div.onclick = onclick;
+	div.setAttribute("Selector_AnimeRef",ref);
 	const name = document.createElement("a");
 	name.innerText = animeName;
 	name.title = animeName;
@@ -228,6 +229,10 @@ function show (animeObj= {
 	if (working === true) return alert("Please wait.");
 		
 	bod.classList.add("show");
+	history.pushState({}, "", changeURL({
+		act: "select",
+		anime: btoa(animeObj["view"])
+	}));
 	[...presentation.children].forEach(e => e.remove());
 
 	const name = document.createElement("h1");
@@ -250,7 +255,7 @@ function show (animeObj= {
 			retrace.classList.remove("working");
 			show(result);
 		});
-	}
+	};
 	presentation.appendChild(retrace);
 
 	if (animeObj["error"]){
@@ -383,7 +388,8 @@ browse.on("list", list => {
 			animeName: animeNameEdited,
 			onclick: ()=>show(animeObject),
 			available: animeObject["files"]?.length,
-			downloadable: animeObject["currentEpisodes"]?.length
+			downloadable: animeObject["currentEpisodes"]?.length,
+			ref: animeName
 		});
 
 		if (Array.isArray(animeObject.files)){
@@ -401,6 +407,7 @@ browse.on("list", list => {
 		//debugger
 	}
 	browseReList.classList.remove("working");
+	refreshPageState();
 });
 browse.emit("list");
 
@@ -412,7 +419,7 @@ browseReList.onclick = ()=> {
 	working = true;
 	browseReList.classList.add("working");
 	browse.emit("list");
-}
+};
 document.getElementById("loading").appendChild(browseReList);
 
 document.addEventListener("keyup", event => {
@@ -449,27 +456,45 @@ function refreshPageState(){
 	const params = (new URL(location)).searchParams;
 	if (params.has("act")){
 		switch (params.get("act")) {
-		case "playVideo":
+		case "playVideo":{
 			if (params.has("source")){
 				const source = atob(params.get("source"));
 				playVideo({
 					source
-				})
+				});
 			}else{
-				alert("Could not autoplay video\r\nwe did not found it in the url")
+				alert("Could not autoplay video\r\nwe did not found it in the url");
 			}
 			break;
-	
-		default:
+		}
+		case "select":{
+			if (params.has("anime")){
+				const anime = atob(params.get("anime"));
+				const availableSource = [...document.querySelector("body > div.selector").children]
+					.filter(ch => ch.hasAttribute("Selector_AnimeRef".toLowerCase()) 
+					&& ch.getAttribute("Selector_AnimeRef".toLowerCase()) === anime);
+				if (availableSource.length ===0){
+					return alert("This anime could not be found.");
+				}
+				bod.classList.add("show");
+				const source = availableSource[0];
+				source.click();
+			}else{
+				alert("Did not found the anime to view");
+			}
 			break;
+		}
+	
+		default:{
+			break;
+		}
 		}
 	}
 
 }
-window.addEventListener("popstate", event => {
-	refreshPageState()
+window.addEventListener("popstate", () => {
+	refreshPageState();
 });
-refreshPageState();
 setInterval(()=> {
 	try {
 		document.title = `${stats["anime"]} animes, and ${stats["ep"]} episodes.`;
