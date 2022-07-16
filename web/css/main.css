@@ -42,7 +42,7 @@ body.player>video {
 
 div.selector {
 	/*width: fit-content;*/
-	max-width: 80%;
+	width: 80%;
 	float: left;
 	height: calc(100% - 50px - 20px * 2);
 	overflow: auto;
