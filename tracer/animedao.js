@@ -62,7 +62,7 @@ async function scrape ()  {
 			.map (e => e.replace(/ $/, "")); // remove trailing space
 
 		resClient["ep"] = {};
-		document.querySelectorAll("html.no-js body div.container.content div.row div.tab-content div#eps.tab-pane.fade.active.in div.col-sm-6 a.episode_well_link").forEach(e => {
+		document.querySelectorAll("html.no-js body div.container.content div.row div.tab-content div#eps.tab-pane.fade.active.in div.col-sm-6 a").forEach(e => {
 			let name = e.title;
 			names.forEach(n => name = name.replace(new RegExp(" ?" + n + " ?"), ""));
 			name = name.match(/[0-9.,]*(?: ?Final)?(?: ?\[Uncensored\])? ?$/g)[0].match(/[0-9.,]*/)[0];

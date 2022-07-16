@@ -149,6 +149,8 @@ download.on("connect", socket => {
 const BrowseDebug = process.env["debug browse"] === "true";
 const browse = io.of("/browse");
 const ffmpeg = require("./functions/ffmpeg");
+const max_work = 3;
+const refresh_all_every = 3600 ;// seconds
 let AnimeCache = {};
 function refreshAnimeCache(){
 	AnimeCache = {};
@@ -197,11 +199,21 @@ browse.on("connect", socket => {
 		refreshAnimeCache();
 		socket.emit("list", JSON.stringify(AnimeCache));
 	});
+	let working = {};
 	socket.on("verify", obj =>{
 		const path = obj.path;
 		const file = obj.file;
+		if (Object.keys(working).length >= max_work){
+			socket.emit("verify", {
+				path,
+				file,
+				ok: false, 
+				error: "Already workig."
+			});
+			return;
+		}
 
-		if (ffmpeg.isReady() !== true){
+		if (ffmpeg.isReady !== true){
 			socket.emit("verify", {
 				path,
 				file,
@@ -210,24 +222,71 @@ browse.on("connect", socket => {
 			});
 			return;
 		}
-
 		if (file !== undefined
 		&& typeof file === "string"){
+			working[path + file] = true;
 			ffmpeg.testIntegrity(file, path).then(result => {
 				socket.emit("verify", {
 					path,
 					file,
 					ok: result, 
 				});
+				delete working[path + file];
 			});
 		} else{
+			working[path] = true;
 			ffmpeg.testIntegrityDirectory(path).then(result => {
 				socket.emit("verify", {
 					path,
 					ok: result, 
 				});
+				delete working[path];
 			});
 		}
+	});
+	let cooldown = Date.now() - refresh_all_every;
+	socket.on("checkAll", async () => {
+		if (Date.now() < cooldown + refresh_all_every){
+			return socket.emit("checkAll", {
+				ok: false, 
+				error: "Wait cooldown."
+			});
+		}
+		if (Object.keys(working).length >= max_work){
+			socket.emit("checkAll", {
+				ok: false, 
+				error: "Already workig."
+			});
+			return;
+		}
+		cooldown = Date.now();
+		for (let i = 0; i < max_work; i++) {
+			working[i] = true;
+		}
+		const animeFolders = fs.readdirSync(global.config.anime.path)
+			.filter(pot => 
+				fs.statSync(global.config.anime.path + pot).isDirectory()
+			);
+		let res = {};
+		for (const anime of animeFolders) {
+			console.log("testing", anime);
+			const tmp  = await ffmpeg.testIntegrityDirectory(global.config.anime.path + anime + "/");
+			const falses = Object.entries(tmp).filter(v => v[1] === false);
+			if (falses.length!==0){
+				console.log("Invalid file at :", falses.map(f =>`${global.config.anime.path}${anime}/${f[0]}`));
+				if (!res [anime]) res [anime] = [];
+				falses.forEach(error => {
+					res [anime].push(error[0]);
+				});
+			}
+		}
+		console.log(res);
+		socket.emit("checkAll", {
+			ok: true, 
+			result : res
+		});
+
+
 	});
 });
 

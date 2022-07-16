@@ -3,6 +3,7 @@ const fs = require("fs");
 const debug= process.env["debug ffmpeg"] === "true";
 const max_instances_at_instant = parseInt(process.env["instances ffmpeg"] ?? 4);
 let ffmpeg;
+
 try {
 	const _spawn = require("child_process").spawn("ffmpeg", ["-version"]);
 	_spawn.on("close", code => {
@@ -32,6 +33,65 @@ function isReady(){
 
 let current = {};
 
+function getVideoLength(file, path){
+	return new Promise((resolve, reject) => {
+		const FP = path+file;
+		if (!fs.existsSync(FP) || fs.statSync(FP).isDirectory())
+			return reject(new Error("The path can not be resolved to a file."));
+		if (isReady() !== true) return reject(new Error("Not Ready"));
+		
+		const spawn = require("child_process").spawn("ffprobe", 
+			[
+				"-v", "error", // only report error
+				"-select_streams", "v:0", //select stram
+				"-show_entries", "stream=duration", //only show the duration
+				"-of", "default=noprint_wrappers=1:nokey=1",  // don't output the beautified version
+				"\"" + file + "\"",    //the file 
+			
+			],
+			{
+				cwd: path,
+				shell: true,
+				timeout: 10000,
+			}
+		);
+		let buffer = "";
+		let error = false;
+		if (debug) console.log(`Spawning ffprobe (video length) for "${path}${file}" `);
+		spawn.stderr.on("data", function(data) {
+			if (debug) console.log(`ffprobe is outputting data for "${path}${file}" : ${data.slice(0,50)}`);
+			if (data.toString().toLowerCase().includes("error")) return error = true;
+		});
+		spawn.on("error", function(err){
+			if (debug) console.log(`ffprobe faced an error for "${path}${file}" : ${err.slice(0,50)}`);
+			if (err.toString().toLowerCase().includes("error")) return error = true;
+		});
+
+		spawn.stdout.on("data", (data) => {
+			if (debug) console.log(`ffprobe is outputting data for "${path}${file}" : ${data.slice(0,50)}`);
+			if (data.toString().toLowerCase().includes("error")) return error = true;
+			buffer += data.toString();
+		});
+		spawn.on("close", code => {
+			if (debug) console.log(`ffprobe exiting with code ${code}, for "${path}${file}"`);
+			if (error !== false) return resolve(false);
+			if (code === 0){
+				return resolve(buffer);
+			}else{
+				return resolve(false);
+			}
+		});
+	});
+}
+// (async ()=> {
+// 	const i = setInterval(async ()=> {
+// 		if (isReady() === true){
+// 			clearInterval(i);
+// 			console.log(await getVideoLength("6.mp4", "/run/media/jehende/hdd/anime/Dont Hurt Me My Healer (SRC animedao)/"));
+// 		}
+// 	}, 200);
+// })();
+
 function testIntegrity(file, path){
 	return new Promise((resolve, reject) => {
 		const FP = path+file;
@@ -42,7 +102,16 @@ function testIntegrity(file, path){
 		function end(){
 			delete current[path + file];
 		}
-		function work(){
+		async function work(){
+			let videoLength = await getVideoLength(file, path);
+			if (videoLength === false){
+				return resolve(false);
+			}
+			if (videoLength.includes(".")) videoLength = videoLength.replace(/\.[0-9]+/, "");
+			if (isNaN (parseInt(videoLength))){
+				return resolve(false);
+			}
+			videoLength = parseInt(videoLength);
 			
 			const spawn = require("child_process").spawn("ffmpeg", 
 				[
@@ -56,7 +125,7 @@ function testIntegrity(file, path){
 				{
 					cwd: path,
 					shell: true,
-					timeout: 10000,
+					timeout: videoLength *10 + 500,
 				}
 			);
 			let error = false;
@@ -74,7 +143,7 @@ function testIntegrity(file, path){
 				if (debug) console.log(`ffmpeg is outputting data for "${path}${file}" : ${data.slice(0,50)}`);
 			});
 			spawn.on("close", code => {
-				if (debug) console.log(`exiting with code ${code}, for "${path}${file}"`);
+				if (debug) console.log(`ffmpeg exiting with code ${code}, for "${path}${file}"`);
 				end();
 				if (error !== false) return resolve(false);
 				if (code === 0){
