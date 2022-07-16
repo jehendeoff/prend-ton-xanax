@@ -5,7 +5,7 @@ const max_instances_at_instant = parseInt(process.env["instances ffmpeg"] ?? 4);
 let ffmpeg;
 
 try {
-	const _spawn = require("child_process").spawn("ffmpeg", ["-version"]);
+	const _spawn = require("child_process").spawn("where", ["-ffmpeg"]);
 	_spawn.on("close", code => {
 		if (code !== 0){
 			if (debug) console.log("FFMPEG not found");
