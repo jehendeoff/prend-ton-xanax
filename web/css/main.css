@@ -45,7 +45,7 @@ div.selector {
 	max-width: 80%;
 	float: left;
 	height: calc(100% - 50px - 20px * 2);
-	overflow: auto;
+	overflow: scroll;
 }
 
 div.selector>div>a {
@@ -75,7 +75,7 @@ body.show>div.selector {
 body>div.presentation {
 	width: auto;
 	/*float: right;*/
-	overflow: auto;
+	overflow: scroll;
 	height: calc(100% - 50px - 20px * 2);
 	padding: 0 0 0 10px;
 }
