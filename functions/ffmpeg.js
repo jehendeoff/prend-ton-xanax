@@ -17,6 +17,12 @@ try {
 		return;
 	
 	});
+	_spawn.on("error", err => {
+		if (debug) console.log("FFMPEG errored");
+		if (debug) console.error(err);
+		ffmpeg = false;
+		return;
+	});
 } catch (error) {
 	if (debug) console.error(error.toString());
 	ffmpeg = false;
