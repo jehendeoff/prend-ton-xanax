@@ -5,17 +5,17 @@ const max_instances_at_instant = parseInt(process.env["instances ffmpeg"] ?? 4);
 let ffmpeg;
 
 try {
-	const _spawn = require("child_process").spawn("where", ["-ffmpeg"]);
+	const _spawn = require("child_process").spawn("ffmpeg", ["-h"]);
 	_spawn.on("close", code => {
 		if (code !== 0){
-			if (debug) console.log("FFMPEG not found");
+			if (debug) console.log(`FFMPEG not found (exited, with code ${code})`);
 			ffmpeg = false;
 			return;
 		}
 		if (debug) console.log("FFMPEG found");
 		ffmpeg = true;
 		return;
-	
+
 	});
 	_spawn.on("error", err => {
 		if (debug) console.log("FFMPEG errored");
@@ -45,15 +45,15 @@ function getVideoLength(file, path){
 		if (!fs.existsSync(FP) || fs.statSync(FP).isDirectory())
 			return reject(new Error("The path can not be resolved to a file."));
 		if (isReady() !== true) return reject(new Error("Not Ready"));
-		
-		const spawn = require("child_process").spawn("ffprobe", 
+
+		const spawn = require("child_process").spawn("ffprobe",
 			[
 				"-v", "error", // only report error
 				"-select_streams", "v:0", //select stram
 				"-show_entries", "stream=duration", //only show the duration
 				"-of", "default=noprint_wrappers=1:nokey=1",  // don't output the beautified version
-				"\"" + file + "\"",    //the file 
-			
+				"\"" + file + "\"",    //the file
+
 			],
 			{
 				cwd: path,
@@ -118,15 +118,15 @@ function testIntegrity(file, path){
 				return resolve(false);
 			}
 			videoLength = parseInt(videoLength);
-			
-			const spawn = require("child_process").spawn("ffmpeg", 
+
+			const spawn = require("child_process").spawn("ffmpeg",
 				[
 					"-v", "error", // only report error
 					"-i", "\""+file+"\"", //the file
 					"-map", "0:1", //only analyse the sound track (faster)
 					"-f", "null",  // don't output the conversion result
 					"-", "2>&1"    //log in console
-				
+
 				],
 				{
 					cwd: path,
@@ -197,7 +197,7 @@ function testIntegrityDirectory(path){
 				if (completed.length === videos.length){
 					return resolve(ret);
 				}
-				
+
 			}).catch(error => {
 				console.log(error);
 				completed.push(t);
@@ -206,7 +206,7 @@ function testIntegrityDirectory(path){
 					return resolve(ret);
 				}
 			});
-			
+
 		}
 	});
 }
