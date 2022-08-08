@@ -11,7 +11,10 @@ fs.readdirSync(global.config.anime.path).filter(anime =>
 	let config = JSON.parse(fs.readFileSync(AnimePath + "config.json"));
 	if (!config.link) return; // we can't do anything without it
 	if (!config.module) config.module = config.link.match(/https?:\/\/([^.]*)/)[1];
-	config.files = fs.readdirSync(AnimePath);
+	config.files = fs.readdirSync(AnimePath).filter(file =>
+		fs.statSync(AnimePath+ file).isFile()
+	&& !["config.json", "config.yml"].includes(file)
+	);
 
 	if (!traceCache[config.module]) traceCache[config.module] = {};
 	traceCache[config.module][config.link] = config;
