@@ -21,6 +21,16 @@ function move(url){
 	if (url === location.href) return;
 	history.pushState({}, "", url);
 }
+function removeFromArray(str, array)  {
+	const index = array.indexOf(str);
+	if (index > -1) { // only splice array when item is found
+		array.splice(index, 1); // 2nd parameter means remove one item only
+		return true;
+	}
+	return false;
+}
+
+
 // let lobby =io("/lobby", {
 // 	rememberUpgrade : true,
 // });
@@ -279,10 +289,14 @@ function show (animeObj= {
 	presentation.appendChild(tags);
 
 	let season = [];
+	let notInSeason = [];
+	animeObj["currentEpisodes"].forEach(e => notInSeason.push(e));
+	animeObj["files"].forEach(e => notInSeason.push(e));
 	if (animeObj["files"]
 		&& Array.isArray(animeObj["files"])){
 		animeObj["files"].forEach(ep => {
 			if (ep.includes(" - ")){
+				removeFromArray(ep, notInSeason);
 				if (!season.includes(ep.replace(/ -.*$/, "")))
 					season.push(ep.replace(/ -.*$/, ""));
 			}
@@ -293,14 +307,16 @@ function show (animeObj= {
 		&& Array.isArray(animeObj["currentEpisodes"])){
 		animeObj["currentEpisodes"].forEach(ep => {
 			if (ep.includes(" - ")){
+				removeFromArray(ep, notInSeason);
 				if (!season.includes(ep.replace(/ -.*$/, "")))
 					season.push(ep.replace(/ -.*$/, ""));
 			}
 		});
 	}
 
-		
-	if (season.length ===0) season.push (-1);
+
+	if (season.length ===0
+	|| 	notInSeason.length !== 0) season.push (-1);
 	season.forEach(season => {
 		const episode = document.createElement("h2");
 		episode.innerText = season ===-1 ?"Episodes" : "Saison " + season;
@@ -313,8 +329,8 @@ function show (animeObj= {
 		if (animeObj["currentEpisodes"]
 			&& Array.isArray(animeObj["currentEpisodes"])){
 			animeObj["currentEpisodes"]
-				.filter(ep => 
-					season === -1
+				.filter(ep =>
+					(season === -1 && !ep.includes(" - "))
 					||ep.startsWith(season + " - ")
 				)
 				.map (ep => {
@@ -337,8 +353,8 @@ function show (animeObj= {
 		if (animeObj["files"]
 			&& Array.isArray(animeObj["files"])){
 			animeObj["files"]
-				.filter(ep => 
-					season === -1
+				.filter(ep =>
+					(season === -1 && !ep.includes(" - "))
 					||ep.startsWith(season + " - ")
 				)
 				.sort((a,b)=>parseInt(a.replace(extensionRegex, ""))-parseInt(b.replace(extensionRegex, "")))
