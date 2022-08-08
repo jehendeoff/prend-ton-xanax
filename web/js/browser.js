@@ -187,7 +187,7 @@ function displayEp(toShow,elem, animeObj){
 			if (working === true) return alert("Please wait.");
 			if (file.classList.contains( "watchable")){
 				playVideo({
-					source: `${location.origin}/video?file=${toShow[i]["file"]}&anime=${btoa(animeObj["view"])}`
+					source: `${location.origin}/video?file=${toShow[i]["file"]}&anime=${btoa(animeObj["path"])}`
 				});
 			}else{
 				if (url === ""){
@@ -235,7 +235,7 @@ function show (animeObj= {
 	bod.classList.add("show");
 	move(changeURL({
 		act: "select",
-		anime: btoa(animeObj["view"])
+		anime: btoa(animeObj["path"])
 	}));
 	[...presentation.children].forEach(e => e.remove());
 
