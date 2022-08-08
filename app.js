@@ -20,7 +20,7 @@ const app = http.createServer((req, res)=> {
 	const url = new URL(req.url, `http://${req.headers["host"]}${req.url ?? "/"}`);
 
 	switch (url.pathname) {
-	
+
 	case (url.pathname.startsWith("/css/") ? url.pathname : ""):{
 		const file = url.pathname.replace("/css/", "");
 		if (file !== ""
@@ -154,7 +154,7 @@ const refresh_all_every = 3600 ;// seconds
 let AnimeCache = {};
 function refreshAnimeCache(){
 	AnimeCache = {};
-	fs.readdirSync(global.config.anime.path).filter(file => 
+	fs.readdirSync(global.config.anime.path).filter(file =>
 		fs.statSync(global.config.anime.path + file).isDirectory()
 	)
 		.sort((a,b)=> {
@@ -180,10 +180,9 @@ function refreshAnimeCache(){
 
 			config["module"] = module;
 
-			config["view"] = anime;
 			config["name"] = animeName;
 
-			config.files = fs.readdirSync(animeDir).filter(file => 
+			config.files = fs.readdirSync(animeDir).filter(file =>
 				fs.statSync(animeDir+ file).isFile()
 			&& !["config.json", "config.yml"].includes(file)
 			);
@@ -207,7 +206,7 @@ browse.on("connect", socket => {
 			socket.emit("verify", {
 				path,
 				file,
-				ok: false, 
+				ok: false,
 				error: "Already workig."
 			});
 			return;
@@ -217,7 +216,7 @@ browse.on("connect", socket => {
 			socket.emit("verify", {
 				path,
 				file,
-				ok: false, 
+				ok: false,
 				error: "FFMPEG isn't initialised"
 			});
 			return;
@@ -229,7 +228,7 @@ browse.on("connect", socket => {
 				socket.emit("verify", {
 					path,
 					file,
-					ok: result, 
+					ok: result,
 				});
 				delete working[path + file];
 			});
@@ -238,7 +237,7 @@ browse.on("connect", socket => {
 			ffmpeg.testIntegrityDirectory(path).then(result => {
 				socket.emit("verify", {
 					path,
-					ok: result, 
+					ok: result,
 				});
 				delete working[path];
 			});
@@ -248,13 +247,13 @@ browse.on("connect", socket => {
 	socket.on("checkAll", async () => {
 		if (Date.now() < cooldown + refresh_all_every){
 			return socket.emit("checkAll", {
-				ok: false, 
+				ok: false,
 				error: "Wait cooldown."
 			});
 		}
 		if (Object.keys(working).length >= max_work){
 			socket.emit("checkAll", {
-				ok: false, 
+				ok: false,
 				error: "Already workig."
 			});
 			return;
@@ -264,7 +263,7 @@ browse.on("connect", socket => {
 			working[i] = true;
 		}
 		const animeFolders = fs.readdirSync(global.config.anime.path)
-			.filter(pot => 
+			.filter(pot =>
 				fs.statSync(global.config.anime.path + pot).isDirectory()
 			);
 		let res = {};
@@ -282,7 +281,7 @@ browse.on("connect", socket => {
 		}
 		console.log(res);
 		socket.emit("checkAll", {
-			ok: true, 
+			ok: true,
 			result : res
 		});
 
@@ -291,7 +290,7 @@ browse.on("connect", socket => {
 });
 
 
-//!SECTION 
+//!SECTION
 
 module.exports = {
 	listen,

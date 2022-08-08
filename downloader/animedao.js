@@ -47,7 +47,7 @@ async function scrape ()  {
 	});
 
 	const page = await browser.newPage();
-	
+
 	const cookiesStart = cookiesFunc.loadCookies("animedao", cookiesFunc.createCookie("darkmode", "1", "animedao.to"));
 	await page.setCookie(...cookiesStart);
 
@@ -62,14 +62,14 @@ async function scrape ()  {
 			await page.close();
 		}
 	});
-	
+
 
 	process.send("Looking: Going to Animedao");
 	await page.goto(urlAnime, {
 		timeout:0,
 		waitUntil: "load"
 	});
-	
+
 	await cloudflareBypasser.cancelCloudflare(page);
 
 	process.send("Looking: Trying with vcdn");

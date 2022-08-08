@@ -1,21 +1,21 @@
 const cluster = require("cluster");
 const fs = require("fs");
 let traceCache = {};
-fs.readdirSync(global.config.anime.path).filter(anime => 
+fs.readdirSync(global.config.anime.path).filter(anime =>
 	fs.statSync(global.config.anime.path + anime).isDirectory()
 	//only go through those that have a config file, since we'd already trace them
 	&& fs.existsSync(global.config.anime.path + anime + "/config.json")
 	&& fs.statSync(global.config.anime.path + anime + "/config.json").isFile()
 ).forEach(anime => {
 	const AnimePath = global.config.anime.path + anime +"/";
-	let config = JSON.parse(fs.readFileSync(AnimePath + "config.json")); 
+	let config = JSON.parse(fs.readFileSync(AnimePath + "config.json"));
 	if (!config.link) return; // we can't do anything without it
 	if (!config.module) config.module = config.link.match(/https?:\/\/([^.]*)/)[1];
 	config.files = fs.readdirSync(AnimePath);
 
 	if (!traceCache[config.module]) traceCache[config.module] = {};
 	traceCache[config.module][config.link] = config;
-	
+
 });
 
 function trace (site, module, ){

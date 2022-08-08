@@ -20,7 +20,6 @@ function changeURL(obj = {
 function move(url){
 	if (url === location.href) return;
 	history.pushState({}, "", url);
-
 }
 // let lobby =io("/lobby", {
 // 	rememberUpgrade : true,
@@ -31,7 +30,7 @@ let download =io("/download", {
 download.on("status", list => {
 	["working", "waiting", "errored", "finished", "downloading"].forEach(Class => {
 		[...document.getElementsByClassName(Class)]
-			.filter(elem => 
+			.filter(elem =>
 				elem.tagName === "a"
 			).forEach(elem => {
 				elem.classList.remove(Class);
@@ -83,7 +82,7 @@ download.on("status", list => {
 
 		}
 	}
-		
+
 
 
 });
@@ -99,7 +98,7 @@ download.on("stop", console.log);
 
 
 //SECTION selector
-	
+
 const selector = document.createElement("div");
 selector.classList.add("selector");
 bod.appendChild(selector);
@@ -156,7 +155,7 @@ function playVideo({
 		source: btoa(source)
 	}));
 }
-	
+
 function displayEp(toShow,elem, animeObj){
 	const url = animeObj["link"] ??"";
 	const name = animeObj["name"] ?? "Unknown";
@@ -172,12 +171,12 @@ function displayEp(toShow,elem, animeObj){
 			if (traced["ep"][i] !== undefined
 					&& traced["ep"][i]["downloaded"] !== true){
 				download.emit("add", {
-					url:traced["ep"][i]["url"], 
-					module: url.match(/https?:\/\/([^.]*)/)[1], 
-					filename: i, 
-					path: traced["path"], 
+					url:traced["ep"][i]["url"],
+					module: url.match(/https?:\/\/([^.]*)/)[1],
+					filename: i,
+					path: traced["path"],
 					info: {
-						anime: name, 
+						anime: name,
 						ep: i,
 						show: toShow[i]["show"],
 					}
@@ -203,7 +202,7 @@ function displayEp(toShow,elem, animeObj){
 						url,
 						module: url.match(/https?:\/\/([^.]*)/)[1]
 					});
-						
+
 					download.once("tracer", m => {
 						working = false;
 						if (m["ok"] !== true) return alert ("Error while fetching episode : " + m.toString() );
@@ -232,7 +231,7 @@ function show (animeObj= {
 	tags: ["Unknown"]
 }){
 	if (working === true) return alert("Please wait.");
-		
+
 	bod.classList.add("show");
 	move(changeURL({
 		act: "select",
@@ -248,7 +247,7 @@ function show (animeObj= {
 	retrace.innerText = "⟳";
 	retrace.onclick = ()=> {
 		if (working === true) return alert("Please wait.");
-		
+
 		download.emit("trace", {
 			url: animeObj["link"],
 			module: animeObj["link"].match(/https?:\/\/([^.]*)/)[1]
@@ -266,7 +265,7 @@ function show (animeObj= {
 	if (animeObj["error"]){
 		const error = document.createElement("a");
 		error.classList.add("error");
-		error.innerText =animeObj["error"]; 
+		error.innerText =animeObj["error"];
 		presentation.appendChild(error);
 	}
 
@@ -332,7 +331,7 @@ function show (animeObj= {
 						file: undefined,
 						show: season !== -1 ? fileName.replace(season + " - ", "") : fileName,
 					};
-					
+
 				});
 		}
 		if (animeObj["files"]
@@ -350,7 +349,7 @@ function show (animeObj= {
 						file: fileName,
 						show: (season !== -1 ? fileName.replace(season + " - ", "") : fileName).replace(extensionRegex, ""),
 					};
-					
+
 				});
 		}
 		displayEp(toShow, episodesGrid, animeObj);
@@ -476,7 +475,7 @@ function refreshPageState(){
 			if (params.has("anime")){
 				const anime = atob(params.get("anime"));
 				const availableSource = [...document.querySelector("body > div.selector").children]
-					.filter(ch => ch.hasAttribute("Selector_AnimeRef".toLowerCase()) 
+					.filter(ch => ch.hasAttribute("Selector_AnimeRef".toLowerCase())
 					&& ch.getAttribute("Selector_AnimeRef".toLowerCase()) === anime);
 				if (availableSource.length ===0){
 					return alert("This anime could not be found.");
@@ -489,7 +488,7 @@ function refreshPageState(){
 			}
 			break;
 		}
-	
+
 		default:{
 			break;
 		}

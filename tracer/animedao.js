@@ -45,7 +45,7 @@ async function scrape ()  {
 	});
 	await cloudflareBypasser.cancelCloudflare(page);
 	let res = await page.evaluate(async (now) => {
-		
+
 		let resClient = {
 			lastChecked: now,
 			module: "animedao"
@@ -83,7 +83,7 @@ async function scrape ()  {
 	const cookiesEnd = await page.cookies();
 	await cookiesFunc.saveCookies("animedao", cookiesEnd);
 	await browser.close();
-	
+
 
 	res["path"] = res["name"].replace(/(?![A-Za-z0-9 ])./g, "") + " (SRC " + __filename/*yes, i know this is bad*/.replace(/.*[/\\]/g, "").replace(/\.js$/, "") + ")";
 	const animeDir = animepath + res["path"] + "/";
@@ -91,7 +91,7 @@ async function scrape ()  {
 	res["currentEpisodes"] = Object.keys(res["ep"]);
 
 	if (!fs.existsSync(animeDir)) fs.mkdirSync(animeDir);
-	res["files"] = fs.readdirSync(animeDir).filter(file => 
+	res["files"] = fs.readdirSync(animeDir).filter(file =>
 		fs.statSync(animeDir+ file).isFile()
 		&& !["config.json", "config.yml"].includes(file)
 	);
