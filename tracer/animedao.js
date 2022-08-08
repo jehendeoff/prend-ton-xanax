@@ -63,10 +63,15 @@ async function scrape ()  {
 
 		resClient["ep"] = {};
 		document.querySelectorAll("html.no-js body div.container.content div.row div.tab-content div#eps.tab-pane.fade.active.in div.col-sm-6 a").forEach(e => {
+			const isSpecial = e.children[0].children[0].children.length !== 1;
 			let name = e.title;
-			names.forEach(n => name = name.replace(new RegExp(" ?" + n + " ?"), ""));
-			name = name.match(/[0-9.,]*(?: ?Final)?(?: ?\[Uncensored\])? ?$/g)[0].match(/[0-9.,]*/)[0];
-			if (name ==="") name = e.title;
+			if (isSpecial){
+				name = "Special - " + name;
+			}else{
+				names.forEach(n => name = name.replace(new RegExp(" ?" + n + " ?"), ""));
+				name = name.match(/[0-9.,]*(?: ?Final)?(?: ?\[Uncensored\])? ?$/g)[0].match(/[0-9.,]*/)[0];
+				if (name ==="") name = e.title;
+			}
 			resClient["ep"][name] = {
 				url : e.href,
 
