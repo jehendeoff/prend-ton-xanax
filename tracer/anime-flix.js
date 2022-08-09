@@ -60,7 +60,8 @@ async function scrape ()  {
 			const episodes = [...[...season.children].filter(ch => ch.classList.contains("se-a"))[0].children[0].children];
 
 			episodes.forEach(ep => {
-				const name = [...ep.children].filter(ch => ch.classList.contains("numerando"))[0].innerText;
+				let name = [...ep.children].filter(ch => ch.classList.contains("numerando"))[0].innerText;
+				name = name.replace(/\/\\\*?"<>\|:/g, "");
 				resClient["ep"][name] = {
 					url : [...[...ep.children].filter(ch => ch.classList.contains("episodiotitle"))[0].children].filter(ch => ch.tagName === "A" && ch.href)[0].href,
 				};
@@ -70,11 +71,11 @@ async function scrape ()  {
 		// [...document.querySelectorAll("#player-tabs > div.tab-blocks > div:nth-child(1) > div > div.new_player_top > div.new_player_selector_box > div.jq-selectbox-wrapper > div > div.jq-selectbox__dropdown > ul > li")].forEach (e =>{
 
 		// 	let name = e.innerText.match(/[0-9.,]*$/)[0].replace(/^0/, "");
-		// 	
+		//
 		// });
 
 		//there doesn't seems to be any reasonable way to detect if it has ended
-		
+
 		const release = [...document.getElementById("info").children].filter(ch => ch.children.length > 1 && ch.children[0].innerText === "Première date de diffusion")[0].children[1].innerText;
 		if (release !== null) resClient["releaseDate"] = release;
 
@@ -90,7 +91,7 @@ async function scrape ()  {
 	const animeDir = animepath + res["path"] + "/";
 	res["link"] = urlAnime;
 	res["currentEpisodes"] = Object.keys(res["ep"]);
-	res["files"] = fs.readdirSync(animeDir).filter(file => 
+	res["files"] = fs.readdirSync(animeDir).filter(file =>
 		fs.statSync(animeDir+ file).isFile()
 		&& !["config.json", "config.yml"].includes(file)
 	);

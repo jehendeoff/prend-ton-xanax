@@ -73,6 +73,7 @@ async function scrape ()  {
 				name = name.match(/[0-9.,]*(?: ?Final)?(?: ?\[Uncensored\])? ?$/g)[0].match(/[0-9.,]*/)[0];
 				if (name ==="") name = e.title;
 			}
+			name = name.replace(/[/\\*?"<>|:]/g, "");
 			resClient["ep"][name] = {
 				url : e.href,
 

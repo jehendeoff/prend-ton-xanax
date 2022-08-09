@@ -49,6 +49,9 @@ async function scrape ()  {
 		[...document.querySelectorAll("#player-tabs > div.tab-blocks > div:nth-child(1) > div > div.new_player_top > div.new_player_selector_box > div.jq-selectbox-wrapper > div > div.jq-selectbox__dropdown > ul > li")].forEach (e =>{
 
 			let name = e.innerText.match(/[0-9.,]*$/)[0].replace(/^0/, "");
+
+			name = name.replace(/\/\\\*?"<>\|:/g, "");
+
 			resClient["ep"][name] = {
 				url : urlAnime + "#Episode=" + btoa(e.innerText),
 			};
@@ -66,7 +69,7 @@ async function scrape ()  {
 	const animeDir = animepath + res["path"] + "/";
 	res["link"] = urlAnime;
 	res["currentEpisodes"] = Object.keys(res["ep"]);
-	res["files"] = fs.readdirSync(animeDir).filter(file => 
+	res["files"] = fs.readdirSync(animeDir).filter(file =>
 		fs.statSync(animeDir+ file).isFile()
 		&& !["config.json", "config.yml"].includes(file)
 	);
