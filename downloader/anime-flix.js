@@ -171,18 +171,18 @@ async function scrape ()  {
 
 		// await waitv();
 		//document.getElementsByClassName("loading-container")[0].click();
-		console.log("We are now downloading", document.getElementsByTagName("title")[0].innerText);
+		console.log("We are now downloading", document.title);
 
 		const link = document.createElement("a");
 		link.setAttribute("href", document.getElementsByTagName("video")[0].src);
-		link.setAttribute("download", document.getElementsByTagName("title")[0].innerText);
+		link.setAttribute("download", document.title);
 		link.setAttribute("id", "video_download_link");
 		document.body.appendChild(link);
 
 		link.click();
 
 		return {
-			name: fileNameEP ?  fileNameEP + document.getElementsByTagName("title")[0].innerText.match (/\.[^.]*$/)[0] :  document.getElementsByTagName("title")[0].innerText,
+			name: fileNameEP ?  fileNameEP + document.title.match (/\.[^.]*$/)[0] :  document.title,
 			url: document.getElementsByTagName("video")[0].src,
 		};
 

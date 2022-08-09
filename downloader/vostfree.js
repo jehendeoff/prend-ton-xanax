@@ -100,7 +100,7 @@ async function scrape ()  {
 		const link = document.createElement("a");
 		const u = document.getElementById("video_html5_wrapper_html5_api").src;
 		link.setAttribute("href", u);
-		link.setAttribute("download", document.getElementsByTagName("title")[0].innerText);
+		link.setAttribute("download", document.title);
 		link.setAttribute("id", "video_download_link");
 		document.body.appendChild(link);
 

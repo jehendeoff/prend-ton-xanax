@@ -186,11 +186,11 @@ async function scrape ()  {
 
 
 		//document.getElementsByClassName("loading-container")[0].click();
-		console.log("We are now downloading", document.getElementsByTagName("title")[0].innerText);
+		console.log("We are now downloading", document.title);
 
 		const link = document.createElement("a");
 		link.setAttribute("href", choosedSource.file);
-		link.setAttribute("download", document.getElementsByTagName("title")[0].innerText);
+		link.setAttribute("download", document.title);
 		link.setAttribute("id", "video_download_link");
 		document.body.appendChild(link);
 
@@ -199,7 +199,7 @@ async function scrape ()  {
 		return {
 			name: fileNameEP ?  fileNameEP + document.getElementsByTagName("title")[0].innerText.match (/\.[^.]*$/)[0] :  document.getElementsByTagName("title")[0].innerText,
 			url: choosedSource.file,
-			test : document.getElementsByTagName("title")[0].innerText
+			test : document.title
 		};
 
 
