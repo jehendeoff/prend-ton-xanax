@@ -195,15 +195,20 @@ async function scrape ()  {
 		document.body.appendChild(link);
 
 		link.click();
+		let name = fileNameEP
+			? fileNameEP + document.title.match (/\.[^.]*$/)[0]
+			: document.title;
+		console.log(name);
+
 
 		return {
-			name: fileNameEP ?  fileNameEP + document.getElementsByTagName("title")[0].innerText.match (/\.[^.]*$/)[0] :  document.getElementsByTagName("title")[0].innerText,
+			name,
 			url: choosedSource.file,
 			test : document.title
 		};
 
 
-	}, (fileNameEP, process.env["preferedQuality"]));
+	}, fileNameEP, process.env["preferedQuality"]);
 	console.log(video);
 	if (typeof video !== "object")
 		throw new Error(video);
