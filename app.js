@@ -68,7 +68,6 @@ const app = http.createServer((req, res)=> {
 			const file = url.searchParams.get("file");
 			const anime = Buffer.from (url.searchParams.get("anime"), "base64").toString();
 			const path = global.config.anime.path + anime + "/" + file;
-			console.log(path);
 			if (fs.existsSync(path)){
 				res.writeHead(200);
 				res.write(fs.readFileSync(path));
