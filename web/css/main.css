@@ -11,7 +11,7 @@ body {
 * {
 	font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 	transition: all 0.3s linear;
-	background-clip: padding-box; 
+	background-clip: padding-box;
 }
 h1 > a {
 	padding: 0 10px;
@@ -213,11 +213,11 @@ input[TYPE="text"] {
 }
 
 @media screen and (max-width: 1340px) {
-	
+
 	body.show>div.selector {
 		width: 0;
 	}
-	
+
 	body.show>div.presentation {
 		width: calc(100% - 10px);
 	}
