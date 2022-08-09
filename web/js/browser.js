@@ -37,6 +37,7 @@ function removeFromArray(str, array)  {
 let download =io("/download", {
 	rememberUpgrade : true,
 });
+let cssBackgroundPercent = "linear-gradient(90deg, rgba(0, 0, 0, 0.3) 0%, ${percent}%, rgba(0, 0, 0, 0.1) 0%)";
 download.on("status", list => {
 	["working", "waiting", "errored", "finished", "downloading"].forEach(Class => {
 		[...document.getElementsByClassName(Class)]
@@ -73,7 +74,7 @@ download.on("status", list => {
 								ep.classList.add("downloading");
 								ep.setAttribute("disabled", true);
 								const percent = (element["percent"] ?? "").slice(0,5);
-								ep.style.background = `linear-gradient(90deg, rgba(0, 0, 0, 0.3) 10%, ${percent}%, rgba(0, 0, 0, 0.1) 10%)`;
+								ep.style.background = cssBackgroundPercent.replace(/\${percent}/g, percent);
 							}else{
 								ep.setAttribute("disabled", true);
 
