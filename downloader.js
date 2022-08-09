@@ -71,6 +71,7 @@ function downloadEP (site, module, path, fileName, info){
 		const download = cluster.fork({
 			chromePath: global.config.puppeteer?.chromePath ?? "",
 			preferLanguage:  global.config.anime?.prefer?.language ?? "",
+			preferQuality:  global.config.anime?.prefer?.quality ?? "",
 			appCookie: global.config.app.cookie,
 			debug: process.env["debug download"],
 		});

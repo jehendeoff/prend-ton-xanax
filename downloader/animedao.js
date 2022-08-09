@@ -114,7 +114,7 @@ async function scrape ()  {
 	process.send("Looking: Vcdn detected, getting video file");
 	const frameHandler = await page.$("#videowrapper_fembed > iframe");
 	const frame = await frameHandler.contentFrame();
-	const video = await frame.evaluate(async fileNameEP => {
+	const video = await frame.evaluate(async (fileNameEP, quality) => {
 		console.clear = () => {
 			console.log("ptdr tu clear");
 		};
@@ -168,11 +168,28 @@ async function scrape ()  {
 		}
 
 		await waitv();
+		let choosedSource;
+		const availableSources = jwplayer().getConfig().playlistItem.allSources.sort((a,b)=> a.label.slice(0,-1) - b.label.slice(0,-1));
+
+		if (availableSources.length === 1){
+			choosedSource = availableSources[0];
+		}else{
+			const preferedSources = availableSources
+				.filter(source => parseInt(source.label.slice(0,-1))>=720);
+			if (preferedSources.length === 0){
+				choosedSource = availableSources.pop();
+			}else{
+				choosedSource = preferedSources[0];
+			}
+		}
+
+
+
 		//document.getElementsByClassName("loading-container")[0].click();
 		console.log("We are now downloading", document.getElementsByTagName("title")[0].innerText);
 
 		const link = document.createElement("a");
-		link.setAttribute("href", document.getElementsByClassName("jw-video jw-reset")[0].src);
+		link.setAttribute("href", choosedSource.file);
 		link.setAttribute("download", document.getElementsByTagName("title")[0].innerText);
 		link.setAttribute("id", "video_download_link");
 		document.body.appendChild(link);
@@ -181,12 +198,12 @@ async function scrape ()  {
 
 		return {
 			name: fileNameEP ?  fileNameEP + document.getElementsByTagName("title")[0].innerText.match (/\.[^.]*$/)[0] :  document.getElementsByTagName("title")[0].innerText,
-			url: document.getElementsByClassName("jw-video jw-reset")[0].src,
+			url: choosedSource.file,
 			test : document.getElementsByTagName("title")[0].innerText
 		};
 
 
-	}, fileNameEP);
+	}, (fileNameEP, process.env["preferedQuality"]));
 	console.log(video);
 	if (typeof video !== "object")
 		throw new Error(video);
