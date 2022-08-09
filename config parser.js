@@ -18,6 +18,7 @@ if (global.config.animePath !== undefined
 
 
 //ANCHOR make new config if none exists
+if (global.config.anime === undefined) global.config.anime = {};
 if (global.config.anime.path === undefined
 || global.config.anime.path === null){
 	global.config.anime.path = __dirname + "/anime/";
@@ -26,6 +27,7 @@ if (global.config.anime.path === undefined
 		fs.mkdirSync(global.config.anime.path);
 	updated = true;
 }
+if (global.config.anime.prefer === undefined) global.config.anime.prefer = {};
 
 if (global.config.app.port === undefined
 || global.config.app.port === null){
