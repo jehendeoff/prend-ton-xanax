@@ -196,7 +196,8 @@ function displayEp(toShow,elem, animeObj){
 		}
 		file.onclick = ()=> {
 			if (working === true) return alert("Please wait.");
-			if (file.classList.contains( "watchable")){
+			if (file.classList.contains("watchable")){
+				if (!animeObj["path"]) return alert("Can't find the path to the anime\r\nPlease retrace the anime.");
 				playVideo({
 					source: `${location.origin}/video?file=${toShow[i]["file"]}&anime=${btoa(animeObj["path"])}`
 				});
@@ -258,6 +259,7 @@ function show (animeObj= {
 	retrace.innerText = "⟳";
 	retrace.onclick = ()=> {
 		if (working === true) return alert("Please wait.");
+		if (!animeObj["link"]) return alert("That anime isn't configured properly!");
 
 		download.emit("trace", {
 			url: animeObj["link"],
@@ -320,7 +322,9 @@ function show (animeObj= {
 	|| 	notInSeason.length !== 0) season.push (-1);
 	season.forEach(season => {
 		const episode = document.createElement("h2");
-		episode.innerText = season ===-1 ?"Episodes" : "Saison " + season;
+		episode.innerText = season ===-1
+			? "Episodes"
+			: (/^[0-9]*$/.test(season) ? "Saison " : "") + season;
 		presentation.appendChild(episode);
 		const episodesGrid = document.createElement("div");
 		episodesGrid.classList.add("EpGrid");
@@ -404,6 +408,7 @@ browse.on("list", list => {
 		let animeObject = list[animeName];
 		const animeNameEdited = !displayed.includes(animeObject.name) ? animeObject.name : animeName;
 		displayed.push(animeNameEdited);
+		if (!animeObject["path"]) animeObject["path"] = animeName;
 
 		addAnimeToSelector({
 			animeName: animeNameEdited,
@@ -447,14 +452,11 @@ document.addEventListener("keyup", event => {
 	switch (event.key.toLowerCase()) {
 	case "escape":{
 		if (bod.classList.contains("player")){
-			const player = document.getElementById("videoPlayer");
-			if (player)
-				player.remove();
-			bod.classList.remove("player");
+			history.back();
 			return;
 		}
 		if (bod.classList.contains("show")){
-			bod.classList.remove("show");
+			history.back();
 			return;
 		}
 		break;
