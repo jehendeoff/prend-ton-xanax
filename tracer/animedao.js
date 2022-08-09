@@ -66,7 +66,8 @@ async function scrape ()  {
 			const isSpecial = e.children[0].children[0].children.length !== 1;
 			let name = e.title;
 			if (isSpecial){
-				name = "Special - " + name;
+				const prefix = e.children[0].children[0].children[1].children[0].innerText;
+				name = prefix + " - " + name;
 			}else{
 				names.forEach(n => name = name.replace(new RegExp(" ?" + n + " ?"), ""));
 				name = name.match(/[0-9.,]*(?: ?Final)?(?: ?\[Uncensored\])? ?$/g)[0].match(/[0-9.,]*/)[0];
