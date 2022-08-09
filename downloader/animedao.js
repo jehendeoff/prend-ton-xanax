@@ -175,7 +175,7 @@ async function scrape ()  {
 			choosedSource = availableSources[0];
 		}else{
 			const preferedSources = availableSources
-				.filter(source => parseInt(source.label.slice(0,-1))>=720);
+				.filter(source => parseInt(source.label.slice(0,-1))>=quality);
 			if (preferedSources.length === 0){
 				choosedSource = availableSources.pop();
 			}else{
