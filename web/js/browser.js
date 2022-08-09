@@ -290,10 +290,9 @@ function show (animeObj= {
 
 	let season = [];
 	let notInSeason = [];
-	animeObj["currentEpisodes"].forEach(e => notInSeason.push(e));
-	animeObj["files"].forEach(e => notInSeason.push(e));
 	if (animeObj["files"]
 		&& Array.isArray(animeObj["files"])){
+		animeObj["files"].forEach(e => notInSeason.push(e));
 		animeObj["files"].forEach(ep => {
 			if (ep.includes(" - ")){
 				removeFromArray(ep, notInSeason);
@@ -305,6 +304,7 @@ function show (animeObj= {
 
 	if (animeObj["currentEpisodes"]
 		&& Array.isArray(animeObj["currentEpisodes"])){
+		animeObj["currentEpisodes"].forEach(e => notInSeason.push(e));
 		animeObj["currentEpisodes"].forEach(ep => {
 			if (ep.includes(" - ")){
 				removeFromArray(ep, notInSeason);
