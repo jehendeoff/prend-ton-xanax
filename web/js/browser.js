@@ -73,7 +73,7 @@ download.on("status", list => {
 							if (type !=="errored"){
 								ep.classList.add("downloading");
 								ep.setAttribute("disabled", true);
-								const percent = (element["percent"] ?? "").slice(0,5);
+								const percent = (element["percent"] ?? "").replace("%", "");
 								ep.style.background = cssBackgroundPercent.replace(/\${percent}/g, percent);
 							}else{
 								ep.setAttribute("disabled", true);
@@ -157,6 +157,9 @@ function playVideo({
 	video.src = source;
 	video.setAttribute("controls", true);
 	bod.appendChild(video);
+
+	const sourceURL = new URL(source);
+	document.title = `Episode ${sourceURL.searchParams.get("file").replace(/\..*$/, "")} | ${atob(sourceURL.searchParams.get("anime")).replace("/ ?\(SRC [^)]+\)$/", "")}`;
 	if (fullscreen === true)
 		video.requestFullscreen();
 	if (autoplay === true)
@@ -267,7 +270,7 @@ function show (animeObj= {
 		});
 		retrace.classList.add("working");
 		working = true;
-		download.on("tracer", result => {
+		download.once("tracer", result => {
 			working = false;
 			retrace.classList.remove("working");
 			show(result);
@@ -449,9 +452,10 @@ browse.on("list", list => {
 	for (const animeName in list) {
 		stats["anime"] +=1;
 		let animeObject = list[animeName];
-		const animeNameEdited = !displayed.includes(animeObject.name) ? animeObject.name : animeName;
-		displayed.push(animeNameEdited);
 		if (!animeObject["path"]) animeObject["path"] = animeName;
+
+		const animeNameEdited = !displayed.includes(animeObject["name"]) ? animeObject.name : animeName;
+		displayed.push(animeNameEdited);
 
 		addAnimeToSelector({
 			animeName: animeNameEdited,
@@ -562,6 +566,7 @@ window.addEventListener("popstate", () => {
 	refreshPageState();
 });
 setInterval(()=> {
+	if (bod.classList.contains("player")) return;
 	try {
 		document.title = `${stats["anime"]} animes, and ${stats["ep"]} episodes.`;
 	} catch (error) {
