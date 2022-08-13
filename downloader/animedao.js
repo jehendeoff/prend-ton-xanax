@@ -35,6 +35,7 @@ process.on("message", async (msg) => {
 
 });
 
+const sources = ["VCDN"];
 
 
 
@@ -99,17 +100,16 @@ async function scrape ()  {
 
 			await wait();
 			await sleep(2000);
+			return "VCDN";
 		} else {
 			console.log("There vcdn isn't available.");
 
+			return "VCDN is not available for that anime";
 		}
 
-		await sleep(2000);
-
-		return true;
 
 	});
-	if (testVCDN !== true)
+	if (!sources.includes(testVCDN))
 		throw new Error(testVCDN);
 	process.send("Looking: Vcdn detected, getting video file");
 	const frameHandler = await page.$("#videowrapper_fembed > iframe");
