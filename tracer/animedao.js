@@ -57,6 +57,20 @@ async function scrape ()  {
 		const alt = document.querySelector(".col-lg-8").innerText.match(/Alternative: ((?:[^,\r\n]*,?)*)/);
 		if (alt !== null) alt[1].split(", ").forEach(e => names.push(e));
 
+		const relations = document.querySelector(".col-lg-8>div.row").children;
+		const prequel = relations[0];
+		if (prequel.children.length !== 0)
+			resClient["prequel"] = {
+				name: prequel.querySelector("h5").innerText,
+				url : prequel.children[0].href,
+			};
+		const sequel = relations[1];
+		if (sequel.children.length !== 0)
+			resClient["sequel"] = {
+				name: sequel.querySelector("h5").innerText,
+				url : sequel.children[0].href,
+			};
+
 		resClient["tags"] = [...document.getElementsByClassName("animeinfo_label")]
 			.map (e => e.innerText) //only tags
 			.map (e => e.replace(/ $/, "")); // remove trailing space
