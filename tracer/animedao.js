@@ -92,7 +92,7 @@ async function scrape ()  {
 	await browser.close();
 
 
-	res["path"] = res["name"].replace(/(?![A-Za-z0-9 ])./g, "") + " (SRC " + __filename/*yes, i know this is bad*/.replace(/.*[/\\]/g, "").replace(/\.js$/, "") + ")";
+	res["path"] = require("../functions/const").CorrectFileName(res["name"]) + " (SRC " + __filename/*yes, i know this is bad*/.replace(/.*[/\\]/g, "").replace(/\.js$/, "") + ")";
 	const animeDir = animepath + res["path"] + "/";
 	res["link"] = urlAnime;
 	res["currentEpisodes"] = Object.keys(res["ep"]);
