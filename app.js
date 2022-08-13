@@ -179,7 +179,7 @@ function refreshAnimeCache(){
 
 			config["module"] = module;
 
-			config["name"] = animeName;
+			if(!config["name"]) config["name"] = animeName;
 
 			config.files = fs.readdirSync(animeDir).filter(file =>
 				fs.statSync(animeDir+ file).isFile()
