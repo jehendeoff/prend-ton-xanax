@@ -291,6 +291,49 @@ function show (animeObj= {
 		tags.innerText = "Unknown";
 	presentation.appendChild(tags);
 
+	const relations = document.createElement("div");
+	relations.classList.add("relations");
+	presentation.appendChild(relations);
+	["prequel", "sequel"].forEach(relation => {
+		if (animeObj[relation]){
+			const relationName = animeObj[relation]["name"];
+			const relationObj = [...document.querySelector("body > div.selector").children]
+				.filter(ch => ch.hasAttribute("Selector_AnimeRef".toLowerCase())
+				&& ch.getAttribute("Selector_AnimeRef".toLowerCase()) === relationName.replace(/(?![A-Za-z0-9 ])./g, "") + ` (SRC ${animeObj["module"]})`);
+
+			const relationDiv = document.createElement("div");
+			relationDiv.onclick = () => {
+				if (relationObj.length !== 1){
+					working = true;
+					const url = animeObj[relation]["url"];
+					download.emit("trace", {
+						url,
+						module: url.match(/https?:\/\/([^.]*)/)[1]
+					});
+
+					download.once("tracer", m => {
+						working = false;
+						if (m["ok"] !== true) return alert ("Error while fetching episode : " + m.toString() );
+						show(m);
+					});
+				}
+				relationObj[0].click();
+			};
+			relationDiv.classList.add("relation");
+			relationDiv.classList.add(relation);
+			relations.appendChild(relationDiv);
+
+			const relationA = document.createElement("a");
+			relationA.innerText = relation;
+			relationDiv.appendChild(relationA);
+
+			const relationH1 = document.createElement("h3");
+			relationH1.innerText = relationName;
+			relationDiv.appendChild(relationH1);
+
+		}
+	});
+
 	let season = [];
 	let notInSeason = [];
 	if (animeObj["files"]

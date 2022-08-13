@@ -95,6 +95,21 @@ div.presentation>a {
 .tags {
 	font-style: italic;
 }
+.relations{
+	display: flow-root;
+}
+.relation{
+	margin-top: 10px;
+	border-width: 1px;
+	border-style: solid;
+	width: fit-content;
+	padding: 5px 10px;
+	border-radius: 5px;
+	float: left;
+}
+.relation.sequel {
+	float: right;
+}
 
 body>div.presentation>div.EpGrid {
 	display: grid;
