@@ -55,6 +55,23 @@ async function scrape ()  {
 		const names = [
 			resClient["name"]
 		];
+		resClient["image"] = document.querySelector(".img-responsive").src;
+
+		resClient["posterB64"] = await (async () =>{
+			const response = await fetch(resClient["image"]);
+			const blob = await response.blob();
+			return await (()=> {
+				return new Promise((onSuccess, onError) => {
+					try {
+						const reader = new FileReader() ;
+						reader.onload = function(){ onSuccess(this.result); } ;
+						reader.readAsDataURL(blob) ;
+					} catch(e) {
+						onError(e);
+					}
+				});
+			})();
+		})();
 		const alt = document.querySelector(".col-lg-8").innerText.match(/Alternative: ((?:[^,\r\n]*,?)*)/);
 		if (alt !== null) alt[1].split(", ").forEach(e => names.push(e));
 
