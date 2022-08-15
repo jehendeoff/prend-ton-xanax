@@ -36,6 +36,13 @@ const app = http.createServer((req, res)=> {
 		break;
 	}
 
+	case "/js/const.js": {
+		res.writeHead(200);
+		res.write(fs.readFileSync(__dirname + "/functions/const.js", "utf8").replace(/module\.exports ?= ?{[^}]*}; ?/, ""));
+		res.end();
+		break;
+	}
+
 	case (url.pathname.startsWith("/js/") ? url.pathname : ""):{
 		const file = url.pathname.replace("/js/", "");
 		if (file !== ""
