@@ -122,6 +122,7 @@ function addAnimeToSelector({
 	ref="Unknown",
 	poster = undefined,
 }){
+
 	const div = document.createElement("div");
 	div.onclick = onclick;
 	div.setAttribute("Selector_AnimeRef",ref);
@@ -139,6 +140,24 @@ function addAnimeToSelector({
 	div.appendChild(details);
 
 	selector.appendChild(div);
+
+	if (poster){
+
+		(async ()=> {
+			//TODO if the image isn't the width of selector, the actual size of the text isn't accurate
+			const lightningConditions = await getLightning(poster, {
+				captureAll: false,
+				captureY: div.clientHeight,
+				captureX: (name.clientWidth > details.clientWidth ? name.clientWidth : details.clientWidth) + 4 +7,
+				responseType: 1,
+				reponsePlage: 1,
+				//actualWidth: selector.clientWidth
+			});
+			//console.log(animeName, lightningConditions);
+			if (lightningConditions <0.5) div.style.color = "white";
+			//div.style.color = `rgb(${256-lightningConditions[0]}, ${256-lightningConditions[1]}, ${256-lightningConditions[2]})`;
+		})();
+	}
 }
 
 //!SECTION
