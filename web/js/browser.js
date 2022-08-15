@@ -119,11 +119,15 @@ function addAnimeToSelector({
 	watched = 0,
 	available = 0,
 	downloadable=0,
-	ref="Unknown"
+	ref="Unknown",
+	poster = undefined
 }){
 	const div = document.createElement("div");
 	div.onclick = onclick;
 	div.setAttribute("Selector_AnimeRef",ref);
+	if (poster){
+		div.style.backgroundImage = `url("${poster}")`;
+	}
 	const name = document.createElement("a");
 	name.innerText = animeName;
 	name.title = animeName;
@@ -463,7 +467,8 @@ browse.on("list", list => {
 			onclick: ()=>show(animeObject),
 			available: animeObject["files"]?.length,
 			downloadable: animeObject["currentEpisodes"]?.length,
-			ref: animeName
+			ref: animeName,
+			poster: animeObject["posterB64"]
 		});
 
 		if (Array.isArray(animeObject.files)){
