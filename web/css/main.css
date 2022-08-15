@@ -48,9 +48,16 @@ div.selector {
 	height: calc(100% - 50px - 20px * 2);
 	overflow: auto;
 }
+div.selector>div{
+	background-position: center center;
+	background-repeat: no-repeat;
+	background-size: cover;
+	background-blend-mode: darken;
+	padding: 5px 0px 5px 0px;
+}
 
 div.selector>div>a {
-	margin: 5px;
+	margin-left: 5px;
 	display: block;
 	font-size: smaller;
 	cursor: pointer;
