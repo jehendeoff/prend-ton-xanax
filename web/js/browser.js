@@ -120,7 +120,7 @@ function addAnimeToSelector({
 	available = 0,
 	downloadable=0,
 	ref="Unknown",
-	poster = undefined
+	poster = undefined,
 }){
 	const div = document.createElement("div");
 	div.onclick = onclick;
