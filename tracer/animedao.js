@@ -5,6 +5,7 @@ const cloudflareBypasser = require("../puppeteer functions/cloudflare bypasser")
 const cookiesFunc = require("../puppeteer functions/cookies");
 puppeteer.use(StealthPlugin());
 const fs = require("fs");
+const constant = require("../functions/const");
 
 var urlAnime = "https://animedao.to/anime/life-with-an-ordinary-guy-who-reincarnated-into-a-total-fantasy-knockout/";
 var animepath = __dirname + "/";
@@ -105,8 +106,7 @@ async function scrape ()  {
 	await cookiesFunc.saveCookies("animedao", cookiesEnd);
 	await browser.close();
 
-
-	res["path"] = require("../functions/const").CorrectFileName(res["name"]) + " (SRC " + __filename/*yes, i know this is bad*/.replace(/.*[/\\]/g, "").replace(/\.js$/, "") + ")";
+	res["path"] = constant.CorrectFileName(res["name"]) + " (SRC " + __filename/*yes, i know this is bad*/.replace(/.*[/\\]/g, "").replace(/\.js$/, "") + ")";
 	const animeDir = animepath + res["path"] + "/";
 	res["link"] = urlAnime;
 	res["currentEpisodes"] = Object.keys(res["ep"]);
