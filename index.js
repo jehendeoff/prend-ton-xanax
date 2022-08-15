@@ -1,5 +1,6 @@
 
 require("./config parser");
+require("./upgrade");
 const downloader = require("./downloader");
 const tracer = require("./tracer");
 const app = require("./app");
