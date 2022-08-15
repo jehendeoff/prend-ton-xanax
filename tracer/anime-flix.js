@@ -50,6 +50,32 @@ async function scrape ()  {
 			module: "anime-flix"
 		};
 		resClient["name"] = document.querySelector("#single > div.content.right > div.sheader > div.data > h1").innerText;
+		resClient["image"] = window.getComputedStyle(document.getElementById("dt_contenedor"), null).getPropertyValue("background-image").slice(5,-2);
+
+
+		resClient["posterB64"] = await (async () =>{
+			return await (()=> {
+				return new Promise((onSuccess, onError) => {
+					try {
+						var image = new Image();
+						image.crossOrigin = "Anonymous";
+
+						image.onload = function(){
+							var canvas = document.createElement("canvas");
+							var context = canvas.getContext("2d");
+							canvas.height = this.naturalHeight;
+							canvas.width = this.naturalWidth;
+							context.drawImage(this, 0, 0);
+							var dataURL = canvas.toDataURL("image/jpeg");
+							onSuccess(dataURL);
+						};
+						image.src = resClient["image"];
+					} catch(e) {
+						onError(e);
+					}
+				});
+			})();
+		})();
 
 		resClient["tags"] = [...document.querySelector("#single > div.content.right > div.sheader > div.data > div.sgeneros").children]
 			.filter(e => e.href) // only tags
