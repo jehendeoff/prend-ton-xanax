@@ -159,14 +159,14 @@ function playVideo({
 	bod.appendChild(video);
 
 	const sourceURL = new URL(source);
-	document.title = `Episode ${sourceURL.searchParams.get("file").replace(/\..*$/, "")} | ${atob(sourceURL.searchParams.get("anime")).replace("/ ?\(SRC [^)]+\)$/", "")}`;
+	document.title = `Episode ${sourceURL.searchParams.get("file").replace(/\..*$/, "")} | ${fromb64(sourceURL.searchParams.get("anime")).replace("/ ?\(SRC [^)]+\)$/", "")}`;
 	if (fullscreen === true)
 		video.requestFullscreen();
 	if (autoplay === true)
 		video.play();
 	move(changeURL({
 		act: "playVideo",
-		source: btoa(source)
+		source: tob64(source)
 	}));
 }
 
@@ -202,7 +202,7 @@ function displayEp(toShow,elem, animeObj){
 			if (file.classList.contains("watchable")){
 				if (!animeObj["path"]) return alert("Can't find the path to the anime\r\nPlease retrace the anime.");
 				playVideo({
-					source: `${location.origin}/video?file=${toShow[i]["file"]}&anime=${btoa(animeObj["path"])}`
+					source: `${location.origin}/video?file=${toShow[i]["file"]}&anime=${tob64(animeObj["path"])}`
 				});
 			}else{
 				if (url === ""){
@@ -250,7 +250,7 @@ function show (animeObj= {
 	bod.classList.add("show");
 	move(changeURL({
 		act: "select",
-		anime: btoa(animeObj["path"])
+		anime: tob64(animeObj["path"])
 	}));
 	[...presentation.children].forEach(e => e.remove());
 
@@ -302,7 +302,7 @@ function show (animeObj= {
 			const relationName = animeObj[relation]["name"];
 			const relationObj = [...document.querySelector("body > div.selector").children]
 				.filter(ch => ch.hasAttribute("Selector_AnimeRef".toLowerCase())
-				&& ch.getAttribute("Selector_AnimeRef".toLowerCase()) === relationName.replace(/(?![A-Za-z0-9 ])./g, "") + ` (SRC ${animeObj["module"]})`);
+				&& ch.getAttribute("Selector_AnimeRef".toLowerCase()) === CorrectFileName(relationName) + ` (SRC ${animeObj["module"]})`);
 
 			const relationDiv = document.createElement("div");
 			relationDiv.onclick = () => {
@@ -319,6 +319,7 @@ function show (animeObj= {
 						if (m["ok"] !== true) return alert ("Error while fetching episode : " + m.toString() );
 						show(m);
 					});
+					return;
 				}
 				relationObj[0].click();
 			};
@@ -528,7 +529,7 @@ function refreshPageState(){
 		switch (params.get("act")) {
 		case "playVideo":{
 			if (params.has("source")){
-				const source = atob(params.get("source"));
+				const source = fromb64(params.get("source"));
 				playVideo({
 					source
 				});
@@ -539,7 +540,7 @@ function refreshPageState(){
 		}
 		case "select":{
 			if (params.has("anime")){
-				const anime = atob(params.get("anime"));
+				const anime = fromb64(params.get("anime"));
 				const availableSource = [...document.querySelector("body > div.selector").children]
 					.filter(ch => ch.hasAttribute("Selector_AnimeRef".toLowerCase())
 					&& ch.getAttribute("Selector_AnimeRef".toLowerCase()) === anime);
