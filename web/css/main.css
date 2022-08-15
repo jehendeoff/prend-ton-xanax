@@ -67,6 +67,13 @@ div.selector>div>a {
 	white-space: nowrap;
 	overflow: clip;
 	text-overflow: ellipsis;
+	background-color: rgba(0, 0, 0, 0.2);
+	border-radius: 5px;
+	border-width: 2px;
+	border-style: solid;
+	border-color: rgba(0, 0, 0, 0.2);
+	max-width: 100%;
+	width: fit-content;
 }
 
 div.selector>div>a:nth-child(1) {
