@@ -55,6 +55,9 @@ div.selector>div{
 	background-blend-mode: darken;
 	padding: 5px 0px 5px 0px;
 }
+body>div.selector>div.posterized{
+	background-color: rgba(0,0,0,0);
+}
 
 div.selector>div>a {
 	margin-left: 5px;

@@ -128,6 +128,7 @@ function addAnimeToSelector({
 	div.setAttribute("Selector_AnimeRef",ref);
 	if (poster){
 		div.style.backgroundImage = `url("${poster}")`;
+		div.classList.add("posterized");
 	}
 	const name = document.createElement("a");
 	name.innerText = animeName;
