@@ -105,12 +105,30 @@ const app = http.createServer((req, res)=> {
 	}
 
 });
+const SocketIO =require("socket.io");
 
-const io = require("socket.io")(app);
+const io = SocketIO(app, {
+	cors:{
+		origin: "*"
+	}
+});
+
+const allowedExtension = [
+	"https://animedao.to"
+];
+function disallowExternalCall(socket, next){
+	const origin = socket.handshake.headers.origin;
+
+	if (!origin) return next();
+	if (allowedExtension.includes(origin)) return next();
+	return next(new Error("You are not allowed"));
+}
 
 //SECTION download
 const DownloadDebug = process.env["debug download"] === "true";
 const download = io.of("/download");
+
+download.use(disallowExternalCall);
 setInterval(() => {
 	download.emit("status", downloader["DownloadList"]);
 }, 1000);
@@ -154,6 +172,7 @@ download.on("connect", socket => {
 //SECTION browse
 const BrowseDebug = process.env["debug browse"] === "true";
 const browse = io.of("/browse");
+browse.use(disallowExternalCall);
 const ffmpeg = require("./functions/ffmpeg");
 const max_work = 3;
 const refresh_all_every = 3600 ;// seconds
