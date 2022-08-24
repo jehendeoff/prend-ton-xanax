@@ -113,6 +113,56 @@ download.on("stop", console.log);
 const selector = document.createElement("div");
 selector.classList.add("selector");
 bod.appendChild(selector);
+
+async function calculateLight(poster, div, {
+	actualWidth,
+	captureX
+}){
+	//TODO if the image isn't the width of selector, the actual size of the text isn't accurate
+	//NOTE should be done
+	const lightningConditions = await getLightning(poster, {
+		captureAll: false,
+		captureY: div.clientHeight,
+		captureX,
+		responseType: 1,
+		reponsePlage: 1,
+		actualWidth
+	});
+	//console.log(animeName, lightningConditions);
+	if (lightningConditions <0.5){
+		div.style.color = "white";
+		div.style.removeProperty("backgroundColor");
+
+	} else{
+		div.style.backgroundColor ="unset";
+		div.style.removeProperty("color");
+	}
+	//div.style.color = `rgb(${256-lightningConditions[0]}, ${256-lightningConditions[1]}, ${256-lightningConditions[2]})`;
+}
+let lastRender = 0;
+const minimumTimeDiff = 500;
+let rendered = 0;
+const SelectorResizeObserver = new ResizeObserver(entries => {
+	if (lastRender + minimumTimeDiff > Date.now()) return;
+	lastRender = Date.now();
+	rendered ++;
+	(async ()=> {
+		for(const entry of entries){
+			const div = entry.target;
+			if (!div) return;
+			const name = div.children[0];
+			const details = div.children[1];
+			const poster = entry.target.style.backgroundImage.slice(5, -2);
+
+			if (poster !== undefined
+				&&  div.parentElement !== null)
+				calculateLight(poster, div, {
+					actualWidth: div.parentElement.clientWidth,
+					captureX: (name.clientWidth > details.clientWidth ? name.clientWidth : details.clientWidth) + 4 +7
+				});
+		}
+	})();
+});
 function addAnimeToSelector({
 	animeName="Unknown",
 	onclick=()=> {},
@@ -143,21 +193,8 @@ function addAnimeToSelector({
 	selector.appendChild(div);
 
 	if (poster){
+		SelectorResizeObserver.observe(div);
 
-		(async ()=> {
-			//TODO if the image isn't the width of selector, the actual size of the text isn't accurate
-			const lightningConditions = await getLightning(poster, {
-				captureAll: false,
-				captureY: div.clientHeight,
-				captureX: (name.clientWidth > details.clientWidth ? name.clientWidth : details.clientWidth) + 4 +7,
-				responseType: 1,
-				reponsePlage: 1,
-				//actualWidth: selector.clientWidth
-			});
-			//console.log(animeName, lightningConditions);
-			if (lightningConditions <0.5) div.style.color = "white";
-			//div.style.color = `rgb(${256-lightningConditions[0]}, ${256-lightningConditions[1]}, ${256-lightningConditions[2]})`;
-		})();
 	}
 }
 
