@@ -46,7 +46,7 @@ function getLightning(url,{
 		const image = new Image();
 		image.onload = function() {
 			if (captureX > this.width) captureX = this.width;
-			if (captureY > this.height) captureXY= this.height;
+			if (captureY > this.height) captureY= this.height;
 			if (!actualWidth) actualWidth = this.width;
 
 			const canvas = document.createElement("canvas");
@@ -58,20 +58,24 @@ function getLightning(url,{
 				canvas.height = captureY;
 				canvas.width = captureX;
 			}
+			// canvas.height = captureY;
+			// canvas.width = 720;
 
 			const context = canvas.getContext("2d");
 
+			const scale = actualWidth / this.width;
 			const imageY = captureAll === true
 				? 0
 				: centerY === true
-					? this.height /2 - captureY/2
+					? this.height /** scale*/ /2 - captureY / (2*scale)
 					: 0;
 
-			const scale = this.width / actualWidth;
 			context.scale(scale, scale);
 			context.drawImage(image,0,0-imageY);
 			context.setTransform(1, 0, 0, 1, 0, 0);
 
+			if (canvas.width <=0
+				|| canvas.height <= 0 ) return 0;
 			let imageData = context.getImageData(0, 0, canvas.width, canvas.height);
 			let data = imageData.data;
 
