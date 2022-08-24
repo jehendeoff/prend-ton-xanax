@@ -56,7 +56,7 @@ div.selector>div{
 	padding: 5px 0px 5px 0px;
 }
 body>div.selector>div.posterized{
-	background-color: rgba(0,0,0,0);
+	background-color: rgba(0,0,0,0.2);
 }
 
 div.selector>div>a {
@@ -258,4 +258,11 @@ input[TYPE="text"] {
 	body.show>div.presentation {
 		width: calc(100% - 10px);
 	}
+}
+
+
+body.player>* ,
+body.player.show > *,
+body.player.show > div.presentation{
+	display: none ;
 }
