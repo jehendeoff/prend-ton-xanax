@@ -97,6 +97,33 @@ const app = http.createServer((req, res)=> {
 		res.end();
 		break;
 	}
+	case "/extension.js":{
+		const origin = req.headers.origin;
+		if (!origin){
+			res.writeHead(200, {
+				"Access-Control-Allow-Origin": origin
+			});
+			res.write("alert(\"can't find the site to extend\")");
+			res.end();
+			return;
+		}
+		const ext = origin.replace(/^https?:\/\//, "");
+		const path = __dirname +"/extensions/" + ext + ".js";
+		if (!fs.existsSync(path)){
+			res.writeHead(200, {
+				"Access-Control-Allow-Origin": origin
+			});
+			res.write("alert(\"unable to extend that site\")");
+			res.end();
+			return;
+		}
+		res.writeHead(200, {
+			"Access-Control-Allow-Origin": origin
+		});
+		res.write(fs.readFileSync(path));
+		res.end();
+		break;
+	}
 	default:{
 		res.writeHead(404);
 		res.end("");
@@ -113,14 +140,16 @@ const io = SocketIO(app, {
 	}
 });
 
-const allowedExtension = [
-	"https://animedao.to"
-];
+const allowedExtension = fs.readdirSync(__dirname + "/extensions/").map(ext => {
+	ext = ext.replace(/\.[^.]*$/, "");
+	return "https://" + ext;
+});
 function disallowExternalCall(socket, next){
 	const origin = socket.handshake.headers.origin;
 
 	if (!origin) return next();
 	if (allowedExtension.includes(origin)) return next();
+	if (process.env["debug"] === "true") console.log(origin, "is not authorized in" + allowedExtension);
 	return next(new Error("You are not allowed"));
 }
 

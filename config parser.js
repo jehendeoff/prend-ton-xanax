@@ -4,7 +4,9 @@ const configPath = __dirname + "/config.yml";
 if(!fs.existsSync(configPath)){
 	throw new Error("Something's wrong, the \"config.yml\" file is missing.\n\n");
 }
-global.config = yaml.parse(fs.readFileSync("./config.yml", "utf-8"));
+global.config = yaml.parse(fs.readFileSync(configPath, "utf-8"));
+
+if(!fs.existsSync(__dirname + "/extensions/")) fs.mkdirSync(__dirname + "/extensions/");
 
 let updated = false;
 //ANCHOR update old config
