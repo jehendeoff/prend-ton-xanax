@@ -101,11 +101,11 @@ async function scrape ()  {
 			await wait();
 			await sleep(2000);
 			return "VCDN";
-		} else {
-			console.log("There vcdn isn't available.");
-
-			return "VCDN is not available for that anime";
 		}
+		console.log("There vcdn isn't available.");
+
+		return "VCDN is not available for that anime";
+
 
 
 	});
@@ -256,7 +256,6 @@ function download(url, name){
 		process.send("Download: start");
 
 		dl.on("end", () => {
-			console.log("Download Completed");
 			process.send("Download: end");
 			r();
 			dl = undefined;
