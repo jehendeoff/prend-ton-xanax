@@ -218,6 +218,7 @@ function playVideo({
 	video.src = source;
 	video.setAttribute("controls", true);
 	bod.appendChild(video);
+	new Gvideo(video);
 
 	const sourceURL = new URL(source);
 	document.title = `${sourceURL.searchParams.get("file").includes(" - ") ? "" : "Episode "}${sourceURL.searchParams.get("file").replace(/\..*$/, "")} | ${fromb64(sourceURL.searchParams.get("anime")).replace("/ ?\(SRC [^)]+\)$/", "")}`;
