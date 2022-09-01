@@ -46,6 +46,7 @@ async function scrape ()  {
 	});
 	await cloudflareBypasser.cancelCloudflare(page);
 	let res = await page.evaluate(async (now) => {
+		debugger;
 
 		let resClient = {
 			lastChecked: now,
@@ -72,26 +73,46 @@ async function scrape ()  {
 				});
 			})();
 		})();
-		const alt = document.querySelector(".table > tbody:nth-child(1) > tr:nth-child(2) > td:nth-child(2)").innerText;
+		function getInTable(txt){
+			return [...document.querySelectorAll("body > div.container.main-container.min-vh-100.px-3 > div > div.row.mt-2.mb-1 > div > div > div > div > div.col-lg-8.px-4.py-3 > .table > tbody > tr")]
+				.filter(tr => tr
+					.children[0]
+					.innerText
+					.toLowerCase()
+					.replace(/^ /, "")
+					.replace(/:$/, "")
+					=== txt.toLowerCase());
+		}
+
+		const alt = getInTable("alt")[0].children[1].innerText;
 		if (alt !== null) alt.split(", ").forEach(e => names.push(e));
 
-		const relations = document.querySelector("div.row:nth-child(7)").children;
-		const prequel = relations[0];
-		if (prequel.children.length !== 0)
-			resClient["prequel"] = {
-				name: prequel.querySelector("span.animename:nth-child(2) > b:nth-child(1)").innerText,
-				url : prequel.querySelector("div.animeposter:nth-child(1) > div:nth-child(1) > a:nth-child(1)").href,
-			};
-		const sequel = relations[1];
-		if (sequel.children.length !== 0)
-			resClient["sequel"] = {
-				name: sequel.querySelector("span.animename:nth-child(2) > b:nth-child(1)").innerText,
-				url : sequel.querySelector("div.animeposter:nth-child(1) > div:nth-child(1) > a:nth-child(1)").href,
-			};
+		const status = getInTable("status")[0].children[1].innerText;
+		if (status !== null) resClient["currentStatus"] = status;
 
-		resClient["tags"] = [...document.querySelectorAll("body > div.container.main-container.min-vh-100.px-3 > div > div.row.mt-2.mb-1 > div > div > div > div > div.col-lg-8.px-4.py-3 > table > tbody > tr:nth-child(6) > td > a")]
+		const release = getInTable("year")[0].children[1].innerText;
+		if (release !== null) resClient["releaseDate"] = release;
+
+		resClient["tags"] = [...getInTable("genres")[0].children[1].children]
 			.map (e => e.innerText); //only tags
 		//.map (e => e.replace(/ $/, "")); // remove trailing space
+
+		const relationAvailable = document.querySelector("div.row:nth-child(7)") !== null;
+		if (relationAvailable){
+			const relations = document.querySelector("div.row:nth-child(7)").children;
+			const prequel = relations[0];
+			if (prequel.children.length !== 0)
+				resClient["prequel"] = {
+					name: prequel.querySelector("span.animename:nth-child(2) > b:nth-child(1)").innerText,
+					url : prequel.querySelector("div.animeposter:nth-child(1) > div:nth-child(1) > a:nth-child(1)").href,
+				};
+			const sequel = relations[1];
+			if (sequel.children.length !== 0)
+				resClient["sequel"] = {
+					name: sequel.querySelector("span.animename:nth-child(2) > b:nth-child(1)").innerText,
+					url : sequel.querySelector("div.animeposter:nth-child(1) > div:nth-child(1) > a:nth-child(1)").href,
+				};
+		}
 
 		resClient["ep"] = {};
 		document.querySelectorAll("html body.d-flex.flex-column.min-vh-100 div.container.main-container.min-vh-100.px-3 div._animeinfo div.row div.tab-content.mt-2 div#episodes-tab-pane.tab-pane.fade.show.active div.row div.col-sm-6 div.card.rounded-0").forEach(e => {
@@ -107,16 +128,12 @@ async function scrape ()  {
 				if (name ==="") name = e.title;
 			}
 			name = name.replace(/[/\\*?"<>|:]/g, "");
-			debugger
+			//debugger
 			resClient["ep"][name] = {
 				url : e.children[0].href,
 
 			};
 		});
-		const status = document.querySelector(".table > tbody:nth-child(1) > tr:nth-child(5) > td:nth-child(2)").innerText;
-		if (status !== null) resClient["currentStatus"] = status;
-		const release = document.querySelector(".table > tbody:nth-child(1) > tr:nth-child(4) > td:nth-child(2)").innerText;
-		if (release !== null) resClient["releaseDate"] = release;
 
 		return resClient;
 	}, now);
