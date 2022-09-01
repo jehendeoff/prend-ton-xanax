@@ -43,7 +43,7 @@ async function scrape ()  {
 	const browser = await puppeteer.launch({
 		executablePath: process.env["chromePath"],
 		headless: false,
-		devtools: true
+		//devtools: true
 
 	});
 
