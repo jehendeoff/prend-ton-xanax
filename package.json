@@ -19,6 +19,7 @@
     "puppeteer-extra": "^3.3.0",
     "puppeteer-extra-plugin-stealth": "^2.10.1",
     "socket.io": "^4.4.1",
+    "web-push": "^3.5.0",
     "yaml": "^2.1.1"
   }
 }

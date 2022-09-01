@@ -243,7 +243,7 @@ class Gvideo{
 		playButton.innerText = GVideosButtons["play pause toggle"]["default"];
 
 
-		this.playPauseToggle = event=> {
+		this.playPauseToggle = ()=> {
 			//if (!document.hasFocus()) return
 			if (video.paused){
 				playButton.innerText = GVideosButtons["play pause toggle"]["pause"];

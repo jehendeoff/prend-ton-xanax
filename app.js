@@ -1,12 +1,6 @@
 const http = require("http");
 const fs = require("fs");
 
-function listen (port){
-	app.listen(port, global.config.app["localhost?"] !== false ? "localhost" : undefined);
-}
-function event ([...args]){
-	io.emit(args);
-}
 let downloader;
 function SetDownloader (arg){
 	downloader = arg;
@@ -17,121 +11,171 @@ function SetTracer (arg){
 }
 
 const app = http.createServer((req, res)=> {
-	const url = new URL(req.url, `http://${req.headers["host"]}${req.url ?? "/"}`);
+	let buff = [];
+	req.on("data", d => buff.push(d));
+	req.on("end", ()=> {
+		const body = Buffer.concat(buff).toString();
 
-	switch (url.pathname) {
+		const url = new URL(req.url, `http://${req.headers["host"]}${req.url ?? "/"}`);
 
-	case (url.pathname.startsWith("/css/") ? url.pathname : ""):{
-		const file = url.pathname.replace("/css/", "");
-		if (file !== ""
-		&& fs.existsSync(__dirname + "/web/css/" + file)){
-			res.writeHead(200);
-			res.write(fs.readFileSync(__dirname + "/web/css/" + file));
-			res.end();
-			break;
-		}else{
-			res.writeHead(404);
-			res.end("");
-		}
-		break;
-	}
+		switch (url.pathname) {
 
-	case "/js/const.js": {
-		res.writeHead(200);
-		res.write(fs.readFileSync(__dirname + "/functions/const.js", "utf8").replace(/module\.exports ?= ?{[^}]*}; ?/, ""));
-		res.end();
-		break;
-	}
-
-	case (url.pathname.startsWith("/js/") ? url.pathname : ""):{
-		const file = url.pathname.replace("/js/", "");
-		if (file !== ""
-		&& fs.existsSync(__dirname + "/web/js/" + file)){
-			res.writeHead(200);
-			res.write(fs.readFileSync(__dirname + "/web/js/" + file));
-			res.end();
-			break;
-		}else{
-			res.writeHead(404);
-			res.end("");
-		}
-		break;
-	}
-	case "/":{
-		res.writeHead(200);
-		res.write(fs.readFileSync(__dirname + "/web/html/index.html"));
-		res.end();
-		break;
-	}
-	case "/browse":{
-		res.writeHead(200);
-		res.write(fs.readFileSync(__dirname + "/web/html/browse.html"));
-		res.end();
-		break;
-	}
-	case "/video":{
-		if (url.searchParams.has("file")
-		&& url.searchParams.has("anime")){
-			const file = url.searchParams.get("file");
-			const anime = Buffer.from (url.searchParams.get("anime"), "base64").toString();
-			const path = global.config.anime.path + anime + "/" + file;
-			if (fs.existsSync(path)){
-				res.writeHead(200);
-				res.write(fs.readFileSync(path));
+		case "/pushpublicKey": {
+			if (global.config.app.notification
+			&& global.config.app.notification.publicKey
+			&& global.config.app.notification.privateKey){
+				res.writeHead(200, {
+					"Access-Control-Allow-Origin": "*"
+				});
+				res.write(global.config.app.notification.publicKey);
 				res.end();
-			}else{
-				res.writeHead(400);
-				res.write("not found");
-				res.end();
+				return;
 			}
-			return;
+			res.writeHead(500);
+			res.end("");
+			break;
 		}
-		res.writeHead(400);
-		res.write("File ou anime search parameter missing.");
-		res.end();
-		break;
-	}
-	case "/downloads":{
-		res.writeHead(200);
-		res.write(fs.readFileSync(__dirname + "/web/html/download list.html"));
-		res.end();
-		break;
-	}
-	case "/extension.js":{
-		const origin = req.headers.origin;
-		if (!origin){
-			res.writeHead(200, {
-				"Access-Control-Allow-Origin": origin
-			});
-			res.write("alert(\"can't find the site to extend\")");
-			res.end();
-			return;
-		}
-		const ext = origin.replace(/^https?:\/\//, "");
-		const path = __dirname +"/extensions/" + ext + ".js";
-		if (!fs.existsSync(path)){
-			res.writeHead(200, {
-				"Access-Control-Allow-Origin": origin
-			});
-			res.write("alert(\"unable to extend that site\")");
-			res.end();
-			return;
-		}
-		res.writeHead(200, {
-			"Access-Control-Allow-Origin": origin
-		});
-		res.write(fs.readFileSync(path));
-		res.end();
-		break;
-	}
-	default:{
-		res.writeHead(404);
-		res.end("");
-		break;
-	}
-	}
 
+		case "/pushentrypoint": {
+			//TODO validate the request
+			let sub;
+			try {
+				sub = JSON.parse(body);
+			} catch (error) {
+				res.writeHead(400);
+				res.end("");
+				return;
+			}
+			const current = fs.existsSync(__dirname + "/notifications list.json") ? JSON.parse(fs.readFileSync(__dirname + "/notifications list.json", "utf-8")) : [];
+
+			current.push(sub);
+			fs.writeFileSync(__dirname + "/notifications list.json", JSON.stringify(current));
+
+			res.writeHead(200, {
+				"Access-Control-Allow-Origin": "*"
+			});
+			res.end("{\"data\": {\"success\": true}}");
+
+
+			break;
+		}
+
+		case (url.pathname.startsWith("/css/") ? url.pathname : ""):{
+			const file = url.pathname.replace("/css/", "");
+			if (file !== ""
+			&& fs.existsSync(__dirname + "/web/css/" + file)){
+				res.writeHead(200);
+				res.write(fs.readFileSync(__dirname + "/web/css/" + file));
+				res.end();
+				break;
+			}else{
+				res.writeHead(404);
+				res.end("");
+			}
+			break;
+		}
+
+		case "/js/const.js": {
+			res.writeHead(200);
+			res.write(fs.readFileSync(__dirname + "/functions/const.js", "utf8").replace(/module\.exports ?= ?{[^}]*}; ?/, ""));
+			res.end();
+			break;
+		}
+
+		case (url.pathname.startsWith("/js/") ? url.pathname : ""):{
+			const file = url.pathname.replace("/js/", "");
+			if (file !== ""
+			&& fs.existsSync(__dirname + "/web/js/" + file)){
+				res.writeHead(200, {
+					"Access-Control-Allow-Origin": "*"
+				});
+				res.write(fs.readFileSync(__dirname + "/web/js/" + file));
+				res.end();
+				break;
+			}else{
+				res.writeHead(404);
+				res.end("");
+			}
+			break;
+		}
+		case "/":{
+			res.writeHead(200);
+			res.write(fs.readFileSync(__dirname + "/web/html/index.html"));
+			res.end();
+			break;
+		}
+		case "/browse":{
+			res.writeHead(200);
+			res.write(fs.readFileSync(__dirname + "/web/html/browse.html"));
+			res.end();
+			break;
+		}
+		case "/video":{
+			if (url.searchParams.has("file")
+			&& url.searchParams.has("anime")){
+				const file = url.searchParams.get("file");
+				const anime = Buffer.from (url.searchParams.get("anime"), "base64").toString();
+				const path = global.config.anime.path + anime + "/" + file;
+				if (fs.existsSync(path)){
+					res.writeHead(200);
+					res.write(fs.readFileSync(path));
+					res.end();
+				}else{
+					res.writeHead(400);
+					res.write("not found");
+					res.end();
+				}
+				return;
+			}
+			res.writeHead(400);
+			res.write("File ou anime search parameter missing.");
+			res.end();
+			break;
+		}
+		case "/downloads":{
+			res.writeHead(200);
+			res.write(fs.readFileSync(__dirname + "/web/html/download list.html"));
+			res.end();
+			break;
+		}
+		case "/extension.js":{
+			const origin = req.headers.origin;
+			if (!origin){
+				res.writeHead(200, {
+					"Access-Control-Allow-Origin": origin ??"*"
+				});
+				res.write("alert(\"can't find the site to extend\")");
+				res.end();
+				return;
+			}
+			const ext = origin.replace(/^https?:\/\//, "");
+			const path = __dirname +"/extensions/" + ext + ".js";
+			if (!fs.existsSync(path)){
+				res.writeHead(200, {
+					"Access-Control-Allow-Origin": origin
+				});
+				res.write("alert(\"unable to extend that site\")");
+				res.end();
+				return;
+			}
+			res.writeHead(200, {
+				"Access-Control-Allow-Origin": origin
+			});
+			res.write(fs.readFileSync(path));
+			res.end();
+			break;
+		}
+		default:{
+			res.writeHead(404);
+			res.end("");
+			break;
+		}
+		}
+
+	});
 });
+
+app.listen(global.config.app.port, global.config.app["localhost?"] !== false ? "localhost" : undefined);
 const SocketIO =require("socket.io");
 
 const io = SocketIO(app, {
@@ -199,6 +243,7 @@ download.on("connect", socket => {
 
 
 //SECTION browse
+// eslint-disable-next-line no-unused-vars
 const BrowseDebug = process.env["debug browse"] === "true";
 const browse = io.of("/browse");
 browse.use(disallowExternalCall);
@@ -347,8 +392,6 @@ browse.on("connect", socket => {
 //!SECTION
 
 module.exports = {
-	listen,
-	event,
 	SetDownloader,
 	SetTracer
 };
