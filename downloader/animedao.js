@@ -43,7 +43,7 @@ async function scrape ()  {
 	const browser = await puppeteer.launch({
 		executablePath: process.env["chromePath"],
 		headless: false,
-		//devtools: true
+		devtools: true
 
 	});
 
@@ -65,7 +65,7 @@ async function scrape ()  {
 	});
 
 
-	process.send("Looking: Going to Animedao");
+	process.send("Looking: Going to " + urlAnime);
 	await page.goto(urlAnime, {
 		timeout:0,
 		waitUntil: "load"
@@ -86,20 +86,34 @@ async function scrape ()  {
 			});
 		}
 		async function wait() {
-			if (document.getElementById("videowrapper_fembed").children.length !== 0) return;
-			console.log("We are still clicking vcdn");
 			vcdn[0].children[0].click();
-			await sleep(1000);
+			if (document.getElementById("videowrapper").children.length !== 0) return;
+			console.log("We are waiting for the iframe to be present");
+			await sleep(500);
 			return await wait();
 		}
 
-		const vcdn = [...document.getElementById("videocontent").children[0].children].filter(e => e.innerText.toLowerCase().replace(/ /g, "") === "vcdn");
+		function waitForIframe(){
+			return new Promise((res) => {
+				document.querySelector("#videowrapper > iframe").addEventListener("DOMAttrModified", function(event) {
+					if (event.attrName == "src") {
+						console.log("iframe src has changed");
+						res(true);
+					}
+				});
+				setTimeout(()=> {
+					console.log("iframe change has timed out");
+					res(true);
+				}, 30*1000);
+			});
+		}
+
+		const vcdn = [...document.getElementById("videotab").children].filter(e => e.innerText.toLowerCase().replace(/ /g, "") === "vcdn");
 
 		if (vcdn && vcdn.length !== 0) {
 			console.log("Vcdn is available.", vcdn.length);
-
 			await wait();
-			await sleep(2000);
+			await waitForIframe();
 			return "VCDN";
 		}
 		console.log("There vcdn isn't available.");
@@ -112,7 +126,7 @@ async function scrape ()  {
 	if (!sources.includes(testVCDN))
 		throw new Error(testVCDN);
 	process.send("Looking: Vcdn detected, getting video file");
-	const frameHandler = await page.$("#videowrapper_fembed > iframe");
+	const frameHandler = await page.$("#videowrapper > iframe");
 	const frame = await frameHandler.contentFrame();
 	const video = await frame.evaluate(async (fileNameEP, quality) => {
 		console.clear = () => {
@@ -123,6 +137,7 @@ async function scrape ()  {
 		};
 		devtoolIsOpening = ()=> {};
 		console.log("ptdr tu clear");
+		debugger;
 
 		function sleep(ms) {
 			return new Promise(resolve => {
@@ -149,7 +164,7 @@ async function scrape ()  {
 
 		async function waitv() {
 			if (document.getElementsByClassName("jw-video jw-reset").length !== 0) return;
-			const nonFirst = [...document.body.children].filter((e,i) => i> 1);
+			const nonFirst = [...document.body.children].filter((e,i) => i< 1);
 			if (nonFirst.size !== 0){
 				const nonFirstDiv = nonFirst.filter(e => e.tagName ==="DIV");
 				if (nonFirstDiv.size !== 0){
