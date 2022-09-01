@@ -21,10 +21,17 @@
 	const download = io("http://localhost:10410/download");
 
 	(()=> {
+		const table = document.querySelector("body > div.container.main-container.min-vh-100.px-3 > div > div.row.mt-2.mb-1 > div > div > div > div > div.col-lg-8.px-4.py-3 > .table > tbody");
+		const tr = document.createElement("tr");
+		table.appendChild(tr);
 		const a = document.createElement("a");
-		a.innerText = "Trace";
-		a.classList.add("label");
-		a.classList.add("animedao-color");
+		tr.appendChild(a);
+		a.href = "javascript:void(0);";
+		const span = document.createElement("span");
+		a.appendChild(span);
+		span.innerText = "Trace";
+		span.classList.add("badge");
+		span.classList.add("badge-genre");
 
 		a.onclick = ()=> {
 			download.emit("trace", {
@@ -32,6 +39,5 @@
 				module: document.location.host.replace(/\..*$/, "")
 			});
 		};
-		document.querySelector(".col-lg-8 > h2:nth-child(1)").appendChild(a);
 	})();
 })();
