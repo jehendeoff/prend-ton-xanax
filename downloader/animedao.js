@@ -86,7 +86,6 @@ async function scrape ()  {
 			});
 		}
 		async function wait() {
-			vcdn[0].children[0].click();
 			if (document.getElementById("videowrapper").children.length !== 0) return;
 			console.log("We are waiting for the iframe to be present");
 			await sleep(500);
@@ -95,16 +94,15 @@ async function scrape ()  {
 
 		function waitForIframe(){
 			return new Promise((res) => {
-				document.querySelector("#videowrapper > iframe").addEventListener("DOMAttrModified", function(event) {
-					if (event.attrName == "src") {
-						console.log("iframe src has changed");
-						res(true);
-					}
+				document.querySelector("#videowrapper > iframe").addEventListener("load", ()=> {
+					console.log("iframe src has changed");
+					res(true);
 				});
+				vcdn[0].children[0].click();
 				setTimeout(()=> {
 					console.log("iframe change has timed out");
 					res(true);
-				}, 30*1000);
+				}, 1000);
 			});
 		}
 
