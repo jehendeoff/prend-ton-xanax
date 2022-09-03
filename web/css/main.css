@@ -94,7 +94,8 @@ body>div.presentation {
 
 body.show>div.presentation {
 	width: calc(80% - 10px);
-	display: unset;
+	display: block;
+	overflow-y: scroll;
 }
 div.presentation>h1 {
 	display: inline;
