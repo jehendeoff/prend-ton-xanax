@@ -46,7 +46,6 @@ async function scrape ()  {
 	});
 	await cloudflareBypasser.cancelCloudflare(page);
 	let res = await page.evaluate(async (now) => {
-		debugger;
 
 		let resClient = {
 			lastChecked: now,
@@ -116,18 +115,19 @@ async function scrape ()  {
 
 		resClient["ep"] = {};
 		document.querySelectorAll("html body.d-flex.flex-column.min-vh-100 div.container.main-container.min-vh-100.px-3 div._animeinfo div.row div.tab-content.mt-2 div#episodes-tab-pane.tab-pane.fade.show.active div.row div.col-sm-6 div.card.rounded-0").forEach(e => {
-			const isSpecial = e.querySelector(".special") !== null;
+			const isSpecial = e.querySelector(".badge.rounded-0:not(.date)") !== null;
 
 			let name = e.children[0].title;
 			if (isSpecial){
-				const prefix = e.querySelector(".special").innerText;
+				const prefix = e.querySelector(".badge.rounded-0:not(.date)").innerText;
 				name = prefix + " - " + name;
 			}else{
 				names.forEach(n => name = name.replace(new RegExp(" ?" + n + " ?"), ""));
 				name = name.match(/[0-9.,]*(?: ?Final)?(?: ?\[Uncensored\])? ?$/g)[0].match(/[0-9.,]*/)[0];
 				if (name ==="") name = e.title;
 			}
-			name = name.replace(/[/\\*?"<>|:]/g, "");
+			if (name ==="") name = e.children[0].title;
+			//name = name.replace(/[/\\*?"<>|:]/g, "");
 			//debugger
 			resClient["ep"][name] = {
 				url : e.children[0].href,
@@ -160,7 +160,7 @@ async function scrape ()  {
 	//should be abandoned
 	for (const key in res["ep"]) {
 		let e = res["ep"][key];
-		const epPath = animepath + res["path"] + "/" + key.match(/[0-9.]*$/g)[0];
+		const epPath = animepath + res["path"] + "/" + constant.CorrectFileName(key);
 		if (fs.existsSync(epPath + ".mp4")) e["downloaded"] = true;
 		if (fs.existsSync(epPath + ".avi")) e["downloaded"] = true;
 		if (fs.existsSync(epPath + ".mkv")) e["downloaded"] = true;
