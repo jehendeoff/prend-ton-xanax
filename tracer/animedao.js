@@ -124,7 +124,6 @@ async function scrape ()  {
 			}else{
 				names.forEach(n => name = name.replace(new RegExp(" ?" + n + " ?"), ""));
 				name = name.match(/[0-9.,]*(?: ?Final)?(?: ?\[Uncensored\])? ?$/g)[0].match(/[0-9.,]*/)[0];
-				if (name ==="") name = e.title;
 			}
 			if (name ==="") name = e.children[0].title;
 			//name = name.replace(/[/\\*?"<>|:]/g, "");
