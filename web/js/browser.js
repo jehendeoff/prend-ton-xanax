@@ -132,10 +132,12 @@ async function calculateLight(poster, div, {
 	if (lightningConditions <0.5){
 		div.style.color = "white";
 		div.style.removeProperty("backgroundColor");
+		div.classList.remove("whitebg");
 
 	} else{
 		div.style.backgroundColor ="unset";
 		div.style.removeProperty("color");
+		div.classList.add("whitebg");
 	}
 	//div.style.color = `rgb(${256-lightningConditions[0]}, ${256-lightningConditions[1]}, ${256-lightningConditions[2]})`;
 }
