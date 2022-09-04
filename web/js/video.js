@@ -93,7 +93,7 @@ function onRemoved(node, callback) {
 
 let lastmove = [0, 0];
 let lastTimeMoved = 0;
-const minimumMove = 10;
+const minimumMove = 5;
 document.addEventListener("mousemove", event => {
 	const oldX = lastmove[0]
 		, oldY = lastmove[1]
