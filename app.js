@@ -242,7 +242,7 @@ function disallowExternalCall(socket, next){
 
 	if (!origin) return next();
 	if (allowedExtension.includes(origin)) return next();
-	if (process.env["debug"] === "true") console.log(origin, "is not authorized in" + allowedExtension);
+	if (process.env["debug"] === "true") console.log(origin, "is not authorized in " + allowedExtension);
 	return next(new Error("You are not allowed"));
 }
 
