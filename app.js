@@ -113,13 +113,62 @@ const app = http.createServer((req, res)=> {
 		case "/video":{
 			if (url.searchParams.has("file")
 			&& url.searchParams.has("anime")){
-				const file = url.searchParams.get("file");
+				const fileName = url.searchParams.get("file");
 				const anime = Buffer.from (url.searchParams.get("anime"), "base64").toString();
-				const path = global.config.anime.path + anime + "/" + file;
+				const path = global.config.anime.path + anime + "/" + fileName;
 				if (fs.existsSync(path)){
-					res.writeHead(200);
-					res.write(fs.readFileSync(path));
-					res.end();
+					let range = req.headers["range"];
+					const file = fs.readFileSync(path);
+
+					if (range){
+						const maxChunk = 1000000;
+
+						const rangeType = range.split("=")[0];
+						const length = file.byteLength;
+
+						range = range.replace(/^.*?=/, "");
+						const rangeSplitted = range.split("-");
+
+						let rangeStart = rangeSplitted[0];
+						let rangeStop = rangeSplitted[1] !== ""? rangeSplitted[1] : length;
+
+						if (isNaN(rangeStart)){
+							rangeStart = "0";
+						}
+						rangeStart = parseInt(rangeStart);
+						if (rangeStart <0) rangeStart = 0;
+						if (isNaN(rangeStop)){
+							rangeStop = length;
+						}
+						rangeStop = parseInt(rangeStop);
+						if (rangeStop >rangeStart + maxChunk){
+							rangeStop = rangeStart + maxChunk;
+						}
+						if (rangeStop > length) rangeStop = length;
+
+
+						const result = file.subarray(rangeStart, rangeStop);
+
+						res.writeHead(206, "OK", {
+							"Accept-Ranges":  "bytes",
+							"Content-Range": `bytes ${rangeStart}-${rangeStop}/${length}`,
+							"Content-Type": "video/" + fileName.replace(/.*\./, ""),
+							"Content-Length": result.length,
+							"Length": result.length,
+							"X-Content-Type-Options": "nosniff"
+
+						});
+						res.write(result);
+						res.end();
+						delete result;
+					}else{
+						res.writeHead(200, "OK", {
+							"Accept-Ranges":  "bytes"
+						});
+						res.write(file);
+						res.end();
+					}
+					delete file;
 				}else{
 					res.writeHead(400);
 					res.write("not found");
