@@ -28,9 +28,30 @@ const css = `
 }
 .video>.controls>input.timer{
 	width: 100%;
-	/*background: black;*/
 	flex:5;
+	appearance: none;
+	height: 25px;
+	background: #fff;
+	outline: none;
+	padding: 0;
+	margin-top: 5px;
 }
+.video>.controls>input.timer::-webkit-slider-thumb{
+	-webkit-appearance: none;
+	appearance: none;
+	width: 2px;
+	height: 25px;
+	background: #04AA6D;
+	cursor: pointer;
+}
+.video>.controls>input.timer::-moz-range-thumb
+{
+	width: 2px;
+	height: 25px;
+	background: #04AA6D;
+	cursor: pointer;
+}
+
 .video>.controls>button{
 	background: unset;
 	border: unset;
@@ -129,7 +150,7 @@ function duration (time, forceHour){
 		, min = Math.floor((time - hour *3600) / 60)
 		, sec = time - (hour *3600) - min * 60;
 
-	if (hour >0) return `${hour.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
+	if (hour >0 || forceHour) return `${hour.toString().padStart(2, "0")}:${min.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
 
 	return `${min.toString().padStart(2, "0")}:${sec.toString().padStart(2, "0")}`;
 }
@@ -139,6 +160,7 @@ let speed = {
 	rewind : 5
 };
 const RewindResolution = 1.5;
+const sliderCss = "linear-gradient(90deg, rgba(0, 0, 0, 0.3) 0%, ${percent}%, rgba(0, 0, 0, 0.1) 0%)";
 
 // eslint-disable-next-line no-unused-vars
 class Gvideo{
@@ -330,6 +352,7 @@ class Gvideo{
 			const currentTime = video.currentTime;
 			timerSlide.value = currentTime;
 			currentTimeA.innerText = duration(currentTime, video.duration > 3600);
+			timerSlide.style.setProperty("background-image", sliderCss.replace(/\${percent}/g, (currentTime / video.duration * 100).toString()));
 		};
 		video.addEventListener("timeupdate", this.updateTimer);
 
