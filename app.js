@@ -152,7 +152,7 @@ const app = http.createServer((req, res)=> {
 						res.writeHead(206, "OK", {
 							"Accept-Ranges":  "bytes",
 							"Content-Range": `bytes ${rangeStart}-${rangeStop}/${length}`,
-							"Content-Type": "video/" + fileName.replace(/.*\./, ""),
+							"Content-Type": `video/${fileName.replace(/.*\./, "")}`,
 							"Content-Length": result.length,
 							"Length": result.length,
 							"X-Content-Type-Options": "nosniff"
