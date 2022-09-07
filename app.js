@@ -121,7 +121,7 @@ const app = http.createServer((req, res)=> {
 					const file = fs.readFileSync(path);
 
 					if (range){
-						const maxChunk = 1000000;
+						const maxChunk = 1024*1024;
 
 						const rangeType = range.split("=")[0];
 						const length = file.byteLength;
