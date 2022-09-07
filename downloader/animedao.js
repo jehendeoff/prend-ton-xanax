@@ -124,6 +124,7 @@ async function scrape ()  {
 	if (!sources.includes(testVCDN))
 		throw new Error(testVCDN);
 	process.send("Looking: Vcdn detected, getting video file");
+	await page.waitForTimeout(500);
 	const frameHandler = await page.$("#videowrapper > iframe");
 	const frame = await frameHandler.contentFrame();
 	const video = await frame.evaluate(async (fileNameEP, quality) => {
