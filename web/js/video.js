@@ -160,7 +160,8 @@ let speed = {
 	rewind : 5
 };
 const RewindResolution = 1.5;
-const sliderCss = "linear-gradient(90deg, rgba(0, 0, 0, 0.3) 0%, ${percent}%, rgba(0, 0, 0, 0.1) 0%)";
+const sliderCss = "linear-gradient(90deg, rgba(0, 0, 0, 0.3) 0%, ${percent}%, rgba(0, 0, 0, 0) 0%)";
+//TODO document.getElementById("videoPlayer").addEventListener("progress", event => console.log(event.timeStamp))
 
 // eslint-disable-next-line no-unused-vars
 class Gvideo{
@@ -261,6 +262,7 @@ class Gvideo{
 		this.controlsDiv = controlsDiv;
 
 		const playButton = document.createElement("button");
+		playButton.setAttribute("type", "button");
 		playButton.classList.add("play");
 		playButton.innerText = GVideosButtons["play pause toggle"]["default"];
 
@@ -326,6 +328,7 @@ class Gvideo{
 		});
 		timerSlide.addEventListener("input", event => {
 			if (this._lockslider === true) return false;
+			this.updateSlider();
 			(async ()=> {
 				if (!video.paused) video.pause();
 				video.currentTime = event.target.value;
@@ -347,12 +350,21 @@ class Gvideo{
 			//console.log(event);
 		});
 
+		this.updateSlider = (currentTime)=> {
+			if (!currentTime) currentTime = video.currentTime;
+			const css = `
+			${sliderCss.replace(/\${percent}/g, (currentTime / video.duration * 100).toString())}
+			white
+			`;
+			timerSlide.style.setProperty("background", css);
+		};
+
 		//when the video plays, update the slider
 		this.updateTimer = () => {
 			const currentTime = video.currentTime;
 			timerSlide.value = currentTime;
 			currentTimeA.innerText = duration(currentTime, video.duration > 3600);
-			timerSlide.style.setProperty("background-image", sliderCss.replace(/\${percent}/g, (currentTime / video.duration * 100).toString()));
+			this.updateSlider();
 		};
 		video.addEventListener("timeupdate", this.updateTimer);
 
@@ -370,6 +382,7 @@ class Gvideo{
 		video.addEventListener("loadedmetadata", this.calibrateTimer);
 
 		const fullscreenButton = document.createElement("button");
+		fullscreenButton.setAttribute("type", "button");
 		fullscreenButton.classList.add("fullscreen");
 		fullscreenButton.innerText = "⛶";
 		this.fullscreenToggle = ()=> {
