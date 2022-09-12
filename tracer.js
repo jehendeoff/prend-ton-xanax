@@ -23,6 +23,7 @@ fs.readdirSync(global.config.anime.path).filter(anime =>
 
 function trace (site, module, ){
 	return new Promise((res, rej)=> {
+		if (!traceCache[module]) traceCache[module] = {};
 		if (traceCache[module][site] !== undefined){
 			const cached = traceCache[module][site];
 			if (cached.lastChecked
