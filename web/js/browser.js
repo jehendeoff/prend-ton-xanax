@@ -223,7 +223,7 @@ function playVideo({
 	new Gvideo(video);
 
 	const sourceURL = new URL(source);
-	document.title = `${sourceURL.searchParams.get("file").includes(" - ") ? "" : "Episode "}${sourceURL.searchParams.get("file").replace(/\..*$/, "")} | ${fromb64(sourceURL.searchParams.get("anime")).replace("/ ?\(SRC [^)]+\)$/", "")}`;
+	document.title = `${sourceURL.searchParams.get("file").includes(" - ") ? "" : "Episode "}${sourceURL.searchParams.get("file").replace(/\..*$/, "")} | ${fromb64(sourceURL.searchParams.get("anime")).replace(/ ?\(SRC [^)]+\)$/, "")}`;
 	if (fullscreen === true)
 		video.requestFullscreen();
 	if (autoplay === true)
