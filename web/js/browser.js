@@ -644,6 +644,11 @@ function refreshPageState() {
 
 }
 window.addEventListener("popstate", () => {
+	try {
+		screen.orientation.unlock();
+	} catch  {
+		console.log();
+	}
 	refreshPageState();
 });
 setInterval(() => {
