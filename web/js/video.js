@@ -168,6 +168,7 @@ class Gvideo{
 	constructor (video){
 		this._videoElem = video;
 		this.isPlaying = !video.paused;
+		this.loadedTimes = 0;
 
 		const div = document.createElement("div");
 		div.classList.add("video");
@@ -405,6 +406,11 @@ class Gvideo{
 		controlsDiv.appendChild(fullscreenButton);
 
 
+		try {
+			screen.orientation.lock("landscape");
+		} catch  {
+			console.log();
+		}
 
 		//controlsDiv.style.setProperty("visibility", "unset");
 		video.removeAttribute("controls");
