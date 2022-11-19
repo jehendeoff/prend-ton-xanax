@@ -1,4 +1,5 @@
 const CorrectFileName = fn => {
+	fn = fn.replace(/:/g, ".");
 	return fn.replace(/(?![A-Za-z0-9 ,"'!.])./g, "");
 };
 
