@@ -177,7 +177,7 @@ const app = http.createServer((req, res)=> {
 				return;
 			}
 			res.writeHead(400);
-			res.write("File ou anime search parameter missing.");
+			res.write("File or anime search parameter missing.");
 			res.end();
 			break;
 		}
