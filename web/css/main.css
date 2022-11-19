@@ -37,6 +37,7 @@ div.selector {
 	float: left;
 	height: calc(100% - 50px - 20px * 2);
 	overflow: auto;
+	overflow-x: hidden;
 }
 div.selector>div{
 	background-position: center center;
@@ -265,4 +266,16 @@ body.player>* ,
 body.player.show > *,
 body.player.show > div.presentation{
 	display: none ;
+}
+@media screen and (min-width: 320px) and (max-width: 767px) and (orientation: portrait) {
+	html > body.player {
+		transform: rotate(90deg);
+		transform-origin: top;
+		width: 100vh;
+		height: 100vw;
+		overflow-x: hidden;
+		position: absolute;
+		top: 50%;
+		left: 0;
+	}
 }
