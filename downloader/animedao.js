@@ -208,7 +208,7 @@ async function scrape ()  {
 		link.setAttribute("id", "video_download_link");
 		document.body.appendChild(link);
 
-		link.click();
+		//link.click();
 		let name = fileNameEP
 			? fileNameEP + document.title.match (/\.[^.]*$/)[0]
 			: document.title;
@@ -228,6 +228,11 @@ async function scrape ()  {
 		throw new Error(video);
 	//await frame.click("#video_download_link");
 	process.send("Looking: Got video File launching download. F:" + Buffer.from(video.name).toString("base64"));
+	await frame.goto(video.url, {
+		timeout:0,
+		waitUntil: "load",
+	});
+	await page.waitForTimeout(500);
 	const urlVideo = await frame.evaluate(() => {
 		return document.getElementsByTagName("video")[0].src || document.getElementsByTagName("video")[0].children[0].src;
 	});
